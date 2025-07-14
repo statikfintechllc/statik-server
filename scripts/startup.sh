@@ -122,6 +122,12 @@ start_mesh() {
 server_url: $MESH_SERVER_URL
 listen_addr: 0.0.0.0:50443
 metrics_listen_addr: 127.0.0.1:9090
+grpc_listen_addr: 0.0.0.0:50443
+grpc_allow_insecure: false
+
+# TLS Configuration
+tls_cert_path: $STATIK_HOME/keys/server.crt
+tls_key_path: $STATIK_HOME/keys/server.key
 
 # Keys and certificates
 private_key_path: $STATIK_HOME/keys/server.key
@@ -154,7 +160,7 @@ dns:
       - 1.1.1.1
       - 8.8.8.8
 
-# Simplified DERP (disable built-in DERP server for now)
+# DERP settings
 derp:
   urls: 
     - https://controlplane.tailscale.com/derpmap/default
@@ -166,6 +172,11 @@ disable_check_updates: true
 ephemeral_node_inactivity_timeout: 120m
 node_update_check_interval: 10s
 unix_socket: $STATIK_HOME/headscale.sock
+
+# Policy settings
+policy:
+  mode: file
+  path: ""
 EOF
 
         # Kill any existing headscale processes

@@ -179,12 +179,51 @@ while true; do
             ;;
         2)
             echo "🛑 Stopping Statik-Server..."
-            if [[ -f "$PID_FILE" ]] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
-                kill "$(cat "$PID_FILE")"
+            
+            # Use the same comprehensive stop logic as statik-cli
+            local stopped=false
+            
+            # Stop main process if PID file exists
+            if [[ -f "$PID_FILE" ]]; then
+                local pid=$(cat "$PID_FILE" 2>/dev/null || echo "")
+                if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+                    echo "  🔹 Stopping main process (PID: $pid)..."
+                    kill "$pid" 2>/dev/null || true
+                    sleep 2
+                    
+                    # Force kill if still running
+                    if kill -0 "$pid" 2>/dev/null; then
+                        echo "  🔹 Force stopping main process..."
+                        kill -9 "$pid" 2>/dev/null || true
+                    fi
+                    stopped=true
+                fi
                 rm -f "$PID_FILE"
-                echo "✅ Statik-Server stopped"
+            fi
+            
+            # Kill any remaining VS Code, headscale, and socat processes
+            local cleanup_procs=()
+            while IFS= read -r line; do
+                if [[ -n "$line" ]]; then
+                    cleanup_procs+=("$line")
+                fi
+            done < <(ps aux | grep -E "(code serve-web|headscale|socat.*8443)" | grep -v grep | awk '{print $2}')
+            
+            if [[ ${#cleanup_procs[@]} -gt 0 ]]; then
+                echo "  🔹 Cleaning up ${#cleanup_procs[@]} related processes..."
+                for pid in "${cleanup_procs[@]}"; do
+                    kill -9 "$pid" 2>/dev/null || true
+                done
+                stopped=true
+            fi
+            
+            # Clean up PID files
+            rm -f "$HOME/.statik-server"/{mesh.pid,proxy.pid,vscode.pid} 2>/dev/null
+            
+            if [[ "$stopped" == "true" ]]; then
+                echo "✅ Statik-Server stopped completely"
             else
-                echo "⚠️  Statik-Server not running"
+                echo "⚠️  Statik-Server was not running"
             fi
             echo "Press enter to continue..."
             read -r
