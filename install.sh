@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+# !/usr/bin/env bash
 # Statik-Server One-Command Installer
 # Usage: ./install.sh
 # Creates a fully self-installing statik-server environment with mesh VPN, VS Code, and GitHub Copilot
@@ -47,6 +47,9 @@ print_header() {
     echo "╚══════════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
 }
+
+git clone https://github.com/statikfintechllc/statik-server.git
+cd statik-server
 
 # Progress indicator
 progress() {
