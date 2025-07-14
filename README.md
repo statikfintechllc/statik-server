@@ -24,10 +24,27 @@
 </div>
 
 <div align="center">
-  <img src="https://img.shields.io/badge/Status-v1.0.0-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="GremlinGPT Fair Use">
-  <img <img src="https://img.shields.io/badge/VS%20Code-1.102.0+-black?style=for-the-badge&labelColor=black&color=darkred&logo=visualstudiocode&logoColor=white" alt="VS Code"/>
+  <img src="https://img.shields.io/badge/Status-v1.0.0-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="Status">
+  <img src="https://img.shields.io/badge/VS%20Code-1.102.0+-black?style=for-the-badge&labelColor=black&color=darkred&logo=visualstudiocode&logoColor=white" alt="VS Code"/>
   <img src="https://img.shields.io/badge/Copilot-Chat%20Enabled-black?style=for-the-badge&labelColor=black&color=darkgreen&logo=githubcopilot&logoColor=white" alt="Copilot Chat Enabled"/>
-  <img src="https://img.shields.io/badge/Mesh%20VPN-Headscale-black?style=for-the-badge&labelColor=black&color=darkred&logo=tailscale&logoColor=white" alt="Tailscale">
+  <img src="https://img.shields.io/badge/Mesh%20VPN-Headscale-black?style=for-the-badge&labelColor=black&color=darkred&logo=tailscale&logoColor=white" alt="Mesh VPN">
+  <img src="https://img.shields.io/badge/MIT%20Open-Usage-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="License">
+</div>
+
+<div align="center">
+  <a href="https://ko-fi.com/statikfintech_llc">
+  <img  
+	  src="https://img.shields.io/badge/Sponsor%20SFTi%20on%20KoFi-darkred?style=for-the-badge&logo=dragon&logoColor=gold" alt="Support"/>
+  </a>
+  <a href="https://patreon.com/StatikFinTech_LLC?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink">
+  <img  
+	  src="https://img.shields.io/badge/Sponsor%20SFTi%20on%20Patreon-black?style=for-the-badge&logo=dragon&logoColor=gold" alt="SFTi"/>
+  </a>
+</div>
+<div align="center"> 
+
+[![Sponsor 💪 statikfintechllc](https://img.shields.io/badge/Sponsor%20SFTi%20on%20GitHub-darkred?logo=github&style=for-the-badge)](https://github.com/sponsors/statikfintechllc)
+
 </div>
 
 <div align="center">
@@ -35,25 +52,77 @@
 # 🚀 Statik-Server
 **Sovereign AI Development Environment with Mesh VPN**
 
-  <img src="https://img.shields.io/badge/MIT%20Open-Usage-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="GremlinGPT Fair Use">
+Transform any machine into a powerful, globally accessible AI development environment with one command.
+
 </div>
 
-Transform any machine into a powerful, globally accessible AI development environment with one command.
+## 📑 Table of Contents
+
+<details>
+<summary><strong>🚀 Getting Started</strong></summary>
+
+- [Quick Start](#-quick-start)
+- [Launch Commands](#-launch-commands)
+- [System Requirements](#-system-requirements)
+
+</details>
+
+<details>
+<summary><strong>✨ Features & Architecture</strong></summary>
+
+- [Core Features](#-features)
+- [Architecture Overview](#-architecture-overview)
+- [VS Code Integration](#-vs-code-integration)
+- [Mesh VPN Details](#-mesh-vpn-architecture)
+
+</details>
+
+<details>
+<summary><strong>🔧 Usage & Access</strong></summary>
+
+- [Access Methods](#-access-your-environment)
+- [Local Development](#-ai-powered-development)
+- [Mesh VPN Setup](#-mesh-vpn-setup)
+- [CLI Commands](#-cli-commands)
+
+</details>
+
+<details>
+<summary><strong>📚 Documentation</strong></summary>
+
+- [User Guide](docs/user/)
+- [Development Guide](docs/development/)
+- [Mesh VPN Guide](docs/mesh/)
+- [API Reference](docs/api/)
+
+</details>
+
+<details>
+<summary><strong>🎨 Customization</strong></summary>
+
+- [Choose Your Emblem](#-choose-your-emblem)
+- [Configuration](docs/user/configuration.md)
+- [Extensions](docs/development/extensions.md)
+
+</details>
 
 ## ✨ Features
 
-- **🤖 GitHub Copilot Chat** - Full AI pair programming
-- **🌐 Mesh VPN** - Global secure access via Headscale
-- **📡 Broadcasting** - Custom domain with HTTPS
-- **🔐 Zero Config** - Auto-generated keys & certificates
+- **🤖 GitHub Copilot Chat** - Full AI pair programming with official Microsoft integration
+- **💻 Local VS Code** - Open desktop VS Code with `statik-cli code`
+- **🌐 Web VS Code** - Browser-based development environment
+- **🌐 Mesh VPN** - Self-hosted Headscale server with Tailscale client compatibility
+- **📡 Global Access** - HTTPS with auto-generated certificates
+- **🔐 Zero Config** - Auto-generated keys & persistent authentication
 - **📱 Mobile Ready** - QR codes for instant access
 - **⚡ VS Code 1.102.0+** - Official Microsoft server
 - **🎯 One Command** - Complete environment in minutes
+- **🔄 Git Integration** - Built-in git workflow commands
 
 ## 🚀 Quick Start
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/statikfintechllc/AscendNet/master/statik-server/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/statikfintechllc/statik-server/master/install.sh | bash
 ```
 
 That's it! The installer handles everything:
@@ -65,7 +134,7 @@ That's it! The installer handles everything:
 - Sets up GitHub Copilot
 - Creates desktop integration
 
-## ⚡ Launch
+## ⚡ Launch Commands
 
 After installation:
 
@@ -78,9 +147,56 @@ statik-cli start
 
 # Check status
 statik-cli status
+
+# Open VS Code locally
+statik-cli code
+
+# Open in browser
+statik-cli open
 ```
 
+## 🏗️ Architecture Overview
 
+Statik-Server combines the best of several technologies to create a sovereign AI development environment:
+
+### Core Components
+- **VS Code Server**: Official Microsoft VS Code server (v1.102.0+) with full extension support
+- **GitHub Copilot**: Native Microsoft integration for AI pair programming
+- **Headscale**: Self-hosted mesh VPN server (Tailscale-compatible protocol)
+- **Tailscale Client**: Used on devices to connect to your Headscale server
+- **HTTPS Proxy**: Auto-generated TLS certificates for secure access
+
+### Mesh VPN Architecture
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Your Device   │    │ Statik-Server   │    │  Remote Device  │
+│                 │    │                 │    │                 │
+│ Tailscale Client├────┤ Headscale Server├────┤ Tailscale Client│
+│                 │    │ + VS Code       │    │                 │
+│                 │    │ + Copilot       │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+**Why this works so well:**
+- **Microsoft-friendly**: Uses official VS Code server and Copilot integration
+- **Self-hosted**: Your Headscale server = no dependency on Tailscale Inc.
+- **Protocol compatible**: Any device with Tailscale can connect to your mesh
+- **Persistent keys**: Auto-generated preauth keys that never expire
+
+## 📋 System Requirements
+
+### Minimum Requirements
+- **OS**: Linux (Ubuntu 20.04+, Debian 11+, CentOS 8+) or macOS 12+
+- **RAM**: 2GB minimum, 4GB recommended
+- **Storage**: 5GB free space
+- **Network**: Internet connection for initial setup
+
+### Dependencies (Auto-installed)
+- Git, curl, wget, unzip
+- Node.js 18+ and npm
+- Go 1.21+ (for Headscale compilation)
+- OpenSSL for certificate generation
+- UFW or iptables for firewall management
 
 ## 🎨 Choose Your Emblem
 
@@ -158,64 +274,90 @@ Reset: After 7:00pm CST on First 2 Clones
 
 ## 🌐 Access Your Environment
 
-- **Local**: http://localhost:8080
-- **Network**: http://[your-ip]:8080
-- **Secure Domain**: https://[hostname].statik.local:8443
-- **Mobile**: Scan QR code displayed on startup
+Once running, access your development environment via:
 
-## 🤖 AI-Powered Development
+### 🖥️ Local Access
+- **Web Interface**: http://localhost:8080
+- **Local VS Code**: `statik-cli code`
+- **HTTPS**: https://localhost:8443
 
-GitHub Copilot Chat is pre-configured and ready to use:
-1. Open VS Code in your browser
-2. Sign in to GitHub (one-time setup)
-3. Start coding with AI assistance!
+### 🌍 Global Access (via Mesh VPN)
+- Connect any device with Tailscale to your Headscale server
+- Access VS Code from anywhere in the world
+- Secure WireGuard-based tunnel
 
-## 🔐 Mesh VPN Access
+### 📱 Mobile Access
+- Scan QR codes displayed at startup
+- Install Tailscale on mobile device
+- Connect to your development environment
 
-Connect additional devices to your development mesh:
+## 🌐 Mesh VPN Setup
+
+### 1. Server Side (Automatic)
+Your Statik-Server automatically runs Headscale:
+- Creates persistent preauth keys
+- Generates TLS certificates  
+- Configures DERP relay servers
+- Sets up magic DNS (*.statik.local)
+
+### 2. Connect Devices
+On any device you want to connect:
 
 ```bash
-# Generate connection key
+# Install Tailscale client
+curl -fsSL https://tailscale.com/install.sh | sh
+
+# Connect to your Headscale server
+sudo tailscale up --login-server https://[your-domain]:8443 --authkey [preauth-key]
+```
+
+Get your preauth key with:
+```bash
 statik-cli mesh key
-
-# Connect from another device
-tailscale up --login-server https://[your-domain]:8443 --authkey [preauth-key]
 ```
 
-Now access your development environment from anywhere securely!
+## 🛠️ CLI Commands
 
-## 📱 Commands
+The `statik-cli` provides complete control over your environment:
 
+### Server Management
 ```bash
-statik-cli start         # Start the server
-statik-cli stop          # Stop the server  
-statik-cli status        # Show detailed status
-statik-cli logs          # View server logs
-statik-cli config        # Manage configuration
-statik-cli mesh          # Mesh VPN management
-statik-cli open          # Open in browser
-statik-cli gui           # Interactive GUI
+statik-cli start          # Start the server
+statik-cli stop           # Stop the server  
+statik-cli restart        # Restart the server
+statik-cli status         # Show detailed status
+statik-cli logs           # View server logs
 ```
 
-## 🎯 What Makes This Different
+### Development Tools
+```bash
+statik-cli code           # Open VS Code locally
+statik-cli code ~/project # Open specific project
+statik-cli open           # Open in browser
+statik-cli gui            # Launch interactive GUI
+```
 
-- **Sovereign**: No external services required
-- **AI-First**: GitHub Copilot Chat built-in
-- **Mesh-Native**: Global VPN access included
-- **Zero Config**: Everything automated
-- **Mobile Ready**: QR codes and responsive design
-- **Enterprise Ready**: Self-signed certificates and domain broadcasting
+### Mesh VPN Management
+```bash
+statik-cli mesh status    # Check mesh status
+statik-cli mesh key       # Generate connection key
+statik-cli mesh devices   # List connected devices
+statik-cli mesh info      # Show mesh configuration
+```
 
-## 📖 Documentation
+### Configuration
+```bash
+statik-cli config token   # Set GitHub token
+statik-cli build          # Build/update server
+statik-cli install        # Install desktop app
+```
 
-Comprehensive documentation in [`docs/`](./docs/):
-
-- [Installation Guide](./docs/INSTALL.md)
-- [Usage Guide](./docs/USAGE.md)  
-- [Mesh VPN Overview](./docs/mesh/MESH_OVERVIEW.md)
-- [Development Structure](./docs/development/STRUCTURE.md)
-
----
+### Git Integration
+```bash
+statik-cli commit -m "msg" # Git commit
+statik-cli push            # Git push
+statik-cli sync -m "msg"   # Add, commit, push
+```
 
 <div align="center">
   <a href="https://medium.com/@statikfintechllc">
@@ -249,17 +391,6 @@ Comprehensive documentation in [`docs/`](./docs/):
     <img src="https://img.shields.io/badge/Sovereign%20AI%20Development-black?style=for-the-badge&logo=zenodo&logoColor=white" alt="Sovereign AI Development"/>
   </a>
 </div>
-
----
-
-## 🔗 Repository
-
-- **GitHub**: https://github.com/statikfintechllc/AscendNet
-- **Issues**: https://github.com/statikfintechllc/AscendNet/issues
-- **License**: MIT
-
----
-
 <div align="center">
   <a href="https://github.com/statikfintechllc">
   <img src="https://img.shields.io/badge/GitHub-black?style=for-the-badge&logo=github&logoColor=gold"/>
