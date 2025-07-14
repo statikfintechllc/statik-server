@@ -20,18 +20,25 @@ echo "============================================="
 # Create directories
 mkdir -p "$APPDIR" "$ICNDIR" "$BINDIR"
 
-# Copy icon to system location
-if [[ -f "$SCRIPT_DIR/icons/AscendAI-v1.0.3.png" ]]; then
-    cp "$SCRIPT_DIR/icons/AscendAI-v1.0.3.png" "$ICNDIR/statik-server.png"
-    echo "✅ Icon installed to $ICNDIR/statik-server.png"
-elif [[ -f "$SCRIPT_DIR/icons/statik-server.png" ]]; then
-    cp "$SCRIPT_DIR/icons/statik-server.png" "$ICNDIR/statik-server.png"
-    echo "✅ Icon installed to $ICNDIR/statik-server.png"
-elif [[ -f "$SCRIPT_DIR/../src/browser/media/pwa-icon-512.png" ]]; then
-    cp "$SCRIPT_DIR/../src/browser/media/pwa-icon-512.png" "$ICNDIR/statik-server.png"
-    echo "✅ Icon installed to $ICNDIR/statik-server.png"
+# Copy emblems to system location
+if [[ -f "$SCRIPT_DIR/../src/icon1.png" ]]; then
+    cp "$SCRIPT_DIR/../src/icon1.png" "$ICNDIR/statik-server-icon1.png"
+    echo "✅ Emblem 1 installed to $ICNDIR/statik-server-icon1.png"
 else
-    echo "⚠️  No icon found, creating placeholder"
+    echo "⚠️  Emblem 1 (icon1.png) not found"
+fi
+
+if [[ -f "$SCRIPT_DIR/../src/icon2.png" ]]; then
+    # Transform icon2 to 512x512 for mobile (requires ImageMagick)
+    if command -v convert >/dev/null; then
+        convert "$SCRIPT_DIR/../src/icon2.png" -resize 512x512 "$ICNDIR/statik-server-icon2-512.png"
+        echo "✅ Emblem 2 (mobile) installed to $ICNDIR/statik-server-icon2-512.png"
+    else
+        cp "$SCRIPT_DIR/../src/icon2.png" "$ICNDIR/statik-server-icon2.png"
+        echo "⚠️  ImageMagick not found, installed icon2 as-is to $ICNDIR/statik-server-icon2.png"
+    fi
+else
+    echo "⚠️  Emblem 2 (icon2.png) not found"
 fi
 
 # Create main CLI script
