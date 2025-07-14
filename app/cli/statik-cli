@@ -47,6 +47,7 @@ function usage() {
     echo "  config        Configuration management"
     echo "  mesh          Mesh VPN management"
     echo "  open          Open server in browser"
+    echo "  code          Open VS Code locally (desktop app)"
     echo "  gui           Launch interactive GUI"
     echo "  install       Install desktop app"
     echo "  uninstall     Remove desktop app"
@@ -63,6 +64,8 @@ function usage() {
     echo "  statik-cli start           # Start the server"
     echo "  statik-cli status          # Check status"
     echo "  statik-cli logs --tail 50  # View last 50 log lines"
+    echo "  statik-cli code            # Open VS Code interactively"
+    echo "  statik-cli code ~/project  # Open VS Code with project folder"
     echo "  statik-cli config token    # Set GitHub token"
     echo "  statik-cli commit -m 'Fix' # Git commit with message"
     echo "  statik-cli push            # Push to remote"
@@ -412,10 +415,8 @@ function manage_mesh() {
                     local auth_key=$("$REPO_DIR/lib/headscale" -c "$STATIK_DIR/config/headscale.yaml" preauthkeys create --user "$user_id" --reusable --expiration 720h 2>/dev/null | tail -1)
                     
                     if [[ -n "$auth_key" && ${#auth_key} -gt 20 ]]; then
-                
-                if [[ -n "$auth_key" ]]; then
-                    echo ""
-                    echo -e "${GREEN}🔑 Connection Key Generated:${NC}"
+                        echo ""
+                        echo -e "${GREEN}🔑 Connection Key Generated:${NC}"
                     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
                     echo "$auth_key"
                     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -433,6 +434,9 @@ function manage_mesh() {
                     fi
                     echo ""
                     echo "3. Access development environment globally! 🌍"
+                    else
+                        error "Failed to generate auth key"
+                    fi
                 else
                     error "Failed to generate auth key"
                 fi
@@ -539,6 +543,73 @@ function open_browser() {
         open "$url" &
     else
         log "Please open $url in your browser"
+    fi
+}
+
+function open_vscode() {
+    local vscode_binary="$REPO_DIR/lib/code"
+    
+    if [[ ! -f "$vscode_binary" ]]; then
+        error "VS Code binary not found at $vscode_binary"
+        log "Run './install.sh' to install VS Code CLI"
+        return 1
+    fi
+    
+    log "${BLUE}Opening VS Code locally...${NC}"
+    verbose "Using VS Code binary: $vscode_binary"
+    
+    # If a path was provided as argument, use it
+    if [[ -n "$1" && -e "$1" ]]; then
+        log "Opening: ${CYAN}$1${NC}"
+        "$vscode_binary" "$1" &
+        success "VS Code opened with $1"
+        return 0
+    fi
+    
+    # If no argument provided, offer options (interactive mode)
+    if [[ -z "$1" ]]; then
+        echo ""
+        echo -e "${CYAN}What would you like to open?${NC}"
+        echo "1) Current directory ($PWD)"
+        echo "2) Home directory ($HOME)"
+        echo "3) Statik-Server directory ($REPO_DIR)"
+        echo "4) Custom path"
+        echo -n "Select (1-4): "
+        read -r choice
+        
+        case $choice in
+            1)
+                "$vscode_binary" "$PWD" &
+                success "VS Code opened with current directory"
+                ;;
+            2)
+                "$vscode_binary" "$HOME" &
+                success "VS Code opened with home directory"
+                ;;
+            3)
+                "$vscode_binary" "$REPO_DIR" &
+                success "VS Code opened with Statik-Server directory"
+                ;;
+            4)
+                echo -n "Enter path to open: "
+                read -r custom_path
+                if [[ -e "$custom_path" ]]; then
+                    "$vscode_binary" "$custom_path" &
+                    success "VS Code opened with $custom_path"
+                else
+                    error "Path not found: $custom_path"
+                    return 1
+                fi
+                ;;
+            *)
+                "$vscode_binary" "$HOME" &
+                success "VS Code opened with home directory (default)"
+                ;;
+        esac
+    else
+        # Argument provided but path doesn't exist
+        error "Path not found: $1"
+        return 1
     fi
 }
 
@@ -758,6 +829,9 @@ case "$COMMAND" in
         ;;
     open)
         open_browser "$@"
+        ;;
+    code)
+        open_vscode "$@"
         ;;
     gui)
         launch_gui "$@"

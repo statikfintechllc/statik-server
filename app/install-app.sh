@@ -7,7 +7,11 @@ set -e
 APP_NAME="Statik-Server"
 APP_VERSION="v1.0.0"
 APP_COMMENT="Sovereign AI Development Mesh"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Get the directory where this script resides
+get_script_dir() {
+    cd "$(dirname "${BASH_SOURCE[0]}")" && pwd
+}
+SCRIPT_DIR="$(get_script_dir)"
 
 # Installation directories
 APPDIR="$HOME/.local/share/applications"
@@ -65,7 +69,10 @@ LOG_FILE="$HOME/.statik/logs/statik-server.log"
 PID_FILE="$HOME/.statik/statik-server.pid"
 
 # Detect preferred shell
-USER_SHELL="$(getent passwd "$USER" | cut -d: -f7 2>/dev/null || echo "${SHELL:-/bin/bash}")"
+USER_SHELL="$(getent passwd "$USER" | cut -d: -f7 2>/dev/null)"
+if [[ -z "$USER_SHELL" ]]; then
+    USER_SHELL="${SHELL:-/bin/bash}"
+fi
 
 # Terminal emulators
 EMULATORS=(x-terminal-emulator gnome-terminal konsole xfce4-terminal lxterminal tilix mate-terminal)
@@ -128,7 +135,8 @@ while true; do
     echo "6) System Status"
     echo "7) Mesh VPN Status"
     echo "8) Open in Browser"
-    echo "9) Configuration"
+    echo "9) Open VS Code Locally"
+    echo "10) Configuration"
     echo "0) Exit"
     echo "u) Uninstall"
     echo -n "Select> "
@@ -181,11 +189,11 @@ while true; do
             echo "🛑 Stopping Statik-Server..."
             
             # Use the same comprehensive stop logic as statik-cli
-            local stopped=false
+            stopped=false
             
             # Stop main process if PID file exists
             if [[ -f "$PID_FILE" ]]; then
-                local pid=$(cat "$PID_FILE" 2>/dev/null || echo "")
+                pid=$(cat "$PID_FILE" 2>/dev/null || echo "")
                 if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
                     echo "  🔹 Stopping main process (PID: $pid)..."
                     kill "$pid" 2>/dev/null || true
@@ -202,7 +210,7 @@ while true; do
             fi
             
             # Kill any remaining VS Code, headscale, and socat processes
-            local cleanup_procs=()
+            cleanup_procs=()
             while IFS= read -r line; do
                 if [[ -n "$line" ]]; then
                     cleanup_procs+=("$line")
@@ -218,7 +226,9 @@ while true; do
             fi
             
             # Clean up PID files
-            rm -f "$HOME/.statik-server"/{mesh.pid,proxy.pid,vscode.pid} 2>/dev/null
+            if [[ -d "$HOME/.statik-server" ]]; then
+                rm -f "$HOME/.statik-server"/{mesh.pid,proxy.pid,vscode.pid} 2>/dev/null
+            fi
             
             if [[ "$stopped" == "true" ]]; then
                 echo "✅ Statik-Server stopped completely"
@@ -299,6 +309,59 @@ while true; do
             read -r
             ;;
         9)
+            echo "💻 Opening VS Code locally..."
+            
+            VSCODE_BINARY="$STATIK_DIR/lib/code"
+            if [[ ! -f "$VSCODE_BINARY" ]]; then
+                echo "❌ VS Code binary not found at $VSCODE_BINARY"
+                echo "   Run './install.sh' to install VS Code CLI"
+            else
+                echo "🚀 Launching VS Code desktop application..."
+                echo "   Using: $VSCODE_BINARY"
+                
+                # Ask user what to open
+                echo ""
+                echo "What would you like to open?"
+                echo "1) Current directory ($PWD)"
+                echo "2) Home directory ($HOME)"
+                echo "3) Statik-Server directory ($STATIK_DIR)"
+                echo "4) Custom path"
+                echo -n "Select> "
+                read -r VSCODE_CHOICE
+                
+                case $VSCODE_CHOICE in
+                    1)
+                        "$VSCODE_BINARY" "$PWD" &
+                        echo "✅ VS Code opened with current directory"
+                        ;;
+                    2)
+                        "$VSCODE_BINARY" "$HOME" &
+                        echo "✅ VS Code opened with home directory"
+                        ;;
+                    3)
+                        "$VSCODE_BINARY" "$STATIK_DIR" &
+                        echo "✅ VS Code opened with Statik-Server directory"
+                        ;;
+                    4)
+                        echo -n "Enter path to open: "
+                        read -r CUSTOM_PATH
+                        if [[ -e "$CUSTOM_PATH" ]]; then
+                            "$VSCODE_BINARY" "$CUSTOM_PATH" &
+                            echo "✅ VS Code opened with $CUSTOM_PATH"
+                        else
+                            echo "❌ Path not found: $CUSTOM_PATH"
+                        fi
+                        ;;
+                    *)
+                        "$VSCODE_BINARY" "$HOME" &
+                        echo "✅ VS Code opened with home directory (default)"
+                        ;;
+                esac
+            fi
+            echo "Press enter to continue..."
+            read -r
+            ;;
+        10)
             clear
             echo -e "\033[1;36mStatik-Server Configuration\033[0m"
             echo "========================="
@@ -345,8 +408,11 @@ while true; do
             read -r CONFIRM
             if [[ "$CONFIRM" == "UNINSTALL" ]]; then
                 rm -f "$HOME/.local/share/applications/Statik-Server.desktop"
-                rm -f "$HOME/.local/share/applications/statik_cli.sh"
+                rm -f "$APPDIR/statik_cli.sh"
                 rm -f "$HOME/.local/share/icons/statik-server.png"
+                rm -f "$HOME/.local/share/icons/statik-server-icon1.png"
+                rm -f "$HOME/.local/share/icons/statik-server-icon2-512.png"
+                rm -f "$HOME/.local/share/icons/statik-server-icon2.png"
                 rm -f "$HOME/.local/bin/statik-server"
                 echo "✅ Statik-Server app uninstalled"
                 exit 0
@@ -385,10 +451,10 @@ chmod +x "$APPDIR/Statik-Server.desktop"
 echo "✅ Desktop entry created at $APPDIR/Statik-Server.desktop"
 
 # Create command-line launcher (GUI)
-cat > "$BINDIR/statik-server" << EOF
+cat > "$BINDIR/statik-server" <<EOF
 #!/usr/bin/env bash
 # Statik-Server GUI launcher
-exec "$APPDIR/statik_cli.sh" "\$@"
+exec "$APPDIR/statik_cli.sh" "$@"
 EOF
 
 chmod +x "$BINDIR/statik-server"
