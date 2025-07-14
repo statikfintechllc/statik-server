@@ -187,7 +187,7 @@ function stop_server() {
         rm -f "$PID_FILE"
     fi
     
-    # Kill any remaining VS Code, tailscale, and socat processes
+    # Kill any remaining VS Code, headscale, and socat processes
     local cleanup_procs=()
     
     # Find all related processes
@@ -195,7 +195,7 @@ function stop_server() {
         if [[ -n "$line" ]]; then
             cleanup_procs+=("$line")
         fi
-    done < <(ps aux | grep -E "(code serve-web|tailscale|socat.*8443)" | grep -v grep | awk '{print $2}')
+    done < <(ps aux | grep -E "(code serve-web|headscale|socat.*8443)" | grep -v grep | awk '{print $2}')
     
     if [[ ${#cleanup_procs[@]} -gt 0 ]]; then
         verbose "Cleaning up ${#cleanup_procs[@]} related processes..."
@@ -232,7 +232,7 @@ function show_status() {
     echo "Service Ports:"
     echo "  VS Code Server: 8080"
     echo "  Mesh VPN Admin: 8081"
-    echo "  Tailscale API: 50443"
+    echo "  Headscale API: 50443"
     echo ""
     
     # Check port status
@@ -348,9 +348,9 @@ function manage_mesh() {
             echo -e "${CYAN}Global Mesh VPN Status${NC}"
             echo "======================"
             
-            # Check tailscale mesh
+            # Check headscale mesh
             if [[ -f "$STATIK_DIR/mesh.pid" ]] && kill -0 "$(cat "$STATIK_DIR/mesh.pid")" 2>/dev/null; then
-                echo -e "${GREEN}✅ Tailscale Mesh VPN: Running${NC}"
+                echo -e "${GREEN}✅ Headscale Mesh VPN: Running${NC}"
                 
                 # Show connection details
                 if [[ -f "$mesh_config" ]]; then
@@ -365,11 +365,11 @@ function manage_mesh() {
                     echo "⚠️  No connection details found"
                 fi
             else
-                echo -e "${RED}❌ Tailscale Mesh VPN: Stopped${NC}"
+                echo -e "${RED}❌ Headscale Mesh VPN: Stopped${NC}"
                 
                 # Check for Tailscale fallback
                 if [[ -f "$STATIK_DIR/config/tailscale-connection.json" ]]; then
-                    echo -e "${YELLOW}🔗 Tailscale Connection: Available${NC}"
+                    echo -e "${YELLOW}🔗 Tailscale Fallback: Available${NC}"
                     local ts_ip=$(jq -r '.tailscale_ip // "unknown"' "$STATIK_DIR/config/tailscale-connection.json" 2>/dev/null || echo "unknown")
                     local vs_code_url=$(jq -r '.vs_code_url // "unknown"' "$STATIK_DIR/config/tailscale-connection.json" 2>/dev/null || echo "unknown")
                     echo "📱 Tailscale IP: $ts_ip"
@@ -384,33 +384,46 @@ function manage_mesh() {
             
             echo ""
             
-            # Show registered devices if tailscale is available
-            if command -v tailscale >/dev/null || [[ -f "$REPO_DIR/lib/tailscale" ]]; then
-                local tailscale_cmd="tailscale"
-                if [[ -f "$REPO_DIR/lib/tailscale" ]]; then
-                    tailscale_cmd="$REPO_DIR/lib/tailscale"
+            # Show registered devices if headscale is available
+            if command -v headscale >/dev/null || [[ -f "$REPO_DIR/lib/headscale" ]]; then
+                local headscale_cmd="headscale"
+                if [[ -f "$REPO_DIR/lib/headscale" ]]; then
+                    headscale_cmd="$REPO_DIR/lib/headscale -c $STATIK_DIR/config/headscale.yaml"
                 fi
                 
                 echo "📱 Connected Devices:"
-                $tailscale_cmd status 2>/dev/null || echo "  Tailscale not connected"
+                $headscale_cmd nodes list 2>/dev/null || echo "  No devices connected"
                 echo ""
-                echo "🔑 Connection Info:"
-                echo "  Use 'tailscale login' to connect this device"
+                echo "🔑 Auth Keys:"
+                # List keys for user 1 (default statik user)
+                $headscale_cmd preauthkeys list --user 1 2>/dev/null || echo "  No auth keys available"
             else
-                echo "  Tailscale not available"
+                echo "  Headscale not available"
             fi
             ;;
         key|keys)
             echo -e "${CYAN}Generate Connection Key${NC}"
             echo "======================"
             
-            if [[ -f "$REPO_DIR/lib/tailscale" ]]; then
-                echo "Use Tailscale's built-in authentication:"
-                echo ""
-                echo -e "${GREEN}🔑 Connection Instructions:${NC}"
-                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                echo "1. Install Tailscale on target device:"
-                echo "   curl -fsSL https://tailscale.com/install.sh | sh"
+            if [[ -f "$REPO_DIR/lib/headscale" ]]; then
+                local key_name="${2:-statik-$(date +%s)}"
+                echo "Generating connection key: $key_name"
+                
+                # Get the first user ID
+                local user_id=$("$REPO_DIR/lib/headscale" -c "$STATIK_DIR/config/headscale.yaml" users list | tail -1 | awk '{print $1}' | head -1)
+                if [[ -n "$user_id" && "$user_id" =~ ^[0-9]+$ ]]; then
+                    local auth_key=$("$REPO_DIR/lib/headscale" -c "$STATIK_DIR/config/headscale.yaml" preauthkeys create --user "$user_id" --reusable --expiration 720h 2>/dev/null | tail -1)
+                    
+                    if [[ -n "$auth_key" && ${#auth_key} -gt 20 ]]; then
+                        echo ""
+                        echo -e "${GREEN}🔑 Connection Key Generated:${NC}"
+                    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                    echo "$auth_key"
+                    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                    echo ""
+                    echo -e "${YELLOW}📋 Connection Instructions:${NC}"
+                    echo "1. Install Tailscale on target device:"
+                    echo "   curl -fsSL https://tailscale.com/install.sh | sh"
                     echo ""
                     echo "2. Connect to this mesh:"
                     if [[ -f "$mesh_config" ]]; then
@@ -427,24 +440,18 @@ function manage_mesh() {
                 else
                     error "Failed to generate auth key"
                 fi
-                echo "2. Connect to Tailscale network:"
-                echo "   sudo tailscale login"
-                echo ""
-                echo "3. Access VS Code:"
-                echo "   https://[tailscale-ip]:8443"
-                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             else
-                error "Tailscale not found. Run 'statik-cli start' first."
+                error "Headscale not found. Run 'statik-cli start' first."
             fi
             ;;
         devices|nodes)
             echo -e "${CYAN}Connected Devices${NC}"
             echo "================="
             
-            if [[ -f "$REPO_DIR/lib/tailscale" ]]; then
-                "$REPO_DIR/lib/tailscale" status 2>/dev/null || echo "Tailscale not connected"
+            if [[ -f "$REPO_DIR/lib/headscale" ]]; then
+                "$REPO_DIR/lib/headscale" -c "$STATIK_DIR/config/headscale.yaml" nodes list 2>/dev/null || echo "No devices connected"
             else
-                echo "Tailscale not available"
+                echo "Headscale not available"
             fi
             ;;
         info)

@@ -66,7 +66,7 @@ statik-cli logs
 ## Mesh VPN Issues
 
 ### Can't Generate Connection Key
-1. **Check Tailscale status:**
+1. **Check Headscale status:**
    ```bash
    statik-cli mesh status
    ```
@@ -76,9 +76,9 @@ statik-cli logs
    statik-cli restart
    ```
 
-3. **Check Tailscale binary:**
+3. **Check Headscale binary:**
    ```bash
-   ls -la ~/statik-server/lib/tailscale
+   ls -la ~/statik-server/lib/headscale
    ```
 
 ### Remote Device Can't Connect
@@ -154,7 +154,7 @@ chmod +x ~/statik-server/lib/*
 ### High CPU Usage
 1. **Check processes:**
    ```bash
-   ps aux | grep -E "(code|tailscale|socat)"
+   ps aux | grep -E "(code|headscale|socat)"
    ```
 
 2. **Monitor resources:**

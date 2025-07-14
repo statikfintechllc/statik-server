@@ -81,7 +81,7 @@ Common questions and answers about Statik-Server.
 **A:** Yes, it uses WireGuard encryption and operates independently of external services.
 
 ### Q: Can I use my existing Tailscale account?
-**A:** Statik-Server uses Tailscale for mesh networking. You can use your existing Tailscale account or let the system manage the connection automatically.
+**A:** Statik-Server runs its own Headscale server for full sovereignty. You can't use existing Tailscale accounts directly.
 
 ## 📱 Mobile Access
 

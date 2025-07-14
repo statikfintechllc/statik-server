@@ -122,7 +122,7 @@ Transform any machine into a powerful, globally accessible AI development enviro
 ## 🚀 Quick Start
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/statikfintechllc/statik-server/master/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/statikfintechllc/statik-server/master/scripts/install.sh | bash
 ```
 
 That's it! The installer handles everything:

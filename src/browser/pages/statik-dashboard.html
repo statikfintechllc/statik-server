@@ -156,7 +156,7 @@
                         <button onclick="openVSCodeNew()" class="control-btn">🆕 New Window</button>
                     </div>
                 </div>
-                <iframe src="/" id="vscode-frame" frameborder="0"></iframe>
+                <iframe src="/" id="vscode-frame" frameborder="0" title="VS Code with GitHub Copilot Chat"></iframe>
             </div>
         </div>
 
@@ -245,7 +245,8 @@
                         <div class="chat-header">💬 GodCore Chat</div>
                         <div class="chat-messages" id="godcore-messages"></div>
                         <div class="chat-input">
-                            <select id="model-select">
+                            <label for="model-select" class="visually-hidden">Select AI Model</label>
+                            <select id="model-select" title="Select AI Model">
                                 <option value="auto">🤖 Auto-Route</option>
                                 <option value="mistral">⚡ Mistral-13B</option>
                                 <option value="monday">🌙 Monday.AI</option>
@@ -524,21 +525,21 @@
                         <div class="resource-meter">
                             <div class="meter-label">CPU Usage</div>
                             <div class="meter-bar">
-                                <div class="meter-fill" style="width: 45%"></div>
+                                <div class="meter-fill cpu-usage"></div>
                             </div>
                             <div class="meter-value">45%</div>
                         </div>
                         <div class="resource-meter">
                             <div class="meter-label">Memory Usage</div>
                             <div class="meter-bar">
-                                <div class="meter-fill" style="width: 67%"></div>
+                                <div class="meter-fill memory-usage"></div>
                             </div>
                             <div class="meter-value">67%</div>
                         </div>
                         <div class="resource-meter">
                             <div class="meter-label">Disk Usage</div>
                             <div class="meter-bar">
-                                <div class="meter-fill" style="width: 23%"></div>
+                                <div class="meter-fill disk-usage"></div>
                             </div>
                             <div class="meter-value">23%</div>
                         </div>
@@ -555,9 +556,9 @@
                             </div>
                             <div class="service-item">
                                 <span class="service-icon">🌐</span>
-                                <span class="service-name">Tailscale VPN</span>
+                                <span class="service-name">Headscale VPN</span>
                                 <span class="service-status running">🟢 Running</span>
-                                <button onclick="restartService('tailscale')" class="service-btn">🔄</button>
+                                <button onclick="restartService('headscale')" class="service-btn">🔄</button>
                             </div>
                             <div class="service-item">
                                 <span class="service-icon">🤖</span>

@@ -8,7 +8,7 @@ Your **Statik-Server** sovereign AI development environment is fully built and r
 
 ### Core Components ✅
 - **VS Code Server Fork** - Statik-server base with Statik branding
-- **Tailscale Mesh VPN** - Embedded with integrated authentication  
+- **Headscale Mesh VPN** - Embedded v0.26.1 with infinite preauth keys  
 - **Copilot Auth Manager** - Persistent GitHub token injection
 - **Memory Router** - Live access to GremlinGPT/GodCore/Mobile-Mirror
 - **Docker Environment** - Self-contained deployment
@@ -22,9 +22,9 @@ statik-server/                  # Statik-Server root
 ├── quick-build.sh             # One-command deployment
 ├── test-setup.sh              # Build verification
 ├── internal/mesh/             # Embedded VPN
-│   ├── tailscale              # official binary
-│   ├── tailscaled             # daemon binary  
-│   └── tailscale.sh           # VPN startup script
+│   ├── headscale              # v0.26.1 binary
+│   ├── headscale.yaml         # Infinite preauth config
+│   └── headscale.sh           # VPN startup script
 └── src/node/statik/           # Statik integrations
     ├── copilot-auth.ts        # GitHub token management
     └── memory-router.ts       # AI memory API
@@ -98,7 +98,7 @@ Once running, access your sovereign development environment:
 - AscendNet project mounting
 
 ### ✅ Mesh VPN
-- Tailscale-powered for seamless connectivity
+- Headscale-powered (Tailscale-compatible)
 - Infinite preauth keys (never expire)
 - Auto peer discovery
 - Magic DNS (*.statik.mesh)
@@ -183,14 +183,14 @@ docker restart statik-server
 
 ### Mesh VPN Issues
 ```bash
-# Check tailscale status
-docker exec statik-server ps aux | grep tailscale
+# Check headscale status
+docker exec statik-server ps aux | grep headscale
 
 # View VPN logs
-docker exec statik-server cat /var/log/tailscale.log
+docker exec statik-server cat /var/log/headscale.log
 
-# Connect device to network
-docker exec statik-server tailscale login
+# Regenerate preauth key
+docker exec statik-server /app/internal/mesh/headscale preauthkeys create --namespace statik --reusable --expiration=never
 ```
 
 ### Memory API Not Responding
