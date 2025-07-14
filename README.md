@@ -25,26 +25,18 @@
 
 <div align="center">
   <img src="https://img.shields.io/badge/Status-v1.0.0-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="GremlinGPT Fair Use">
-  <img src="https://img.shields.io/badge/VS%20Code-1.102.0+-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="VS Code"/>
-  <img src="https://img.shields.io/badge/Mesh%20VPN-Headscale-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="Tailscale">
+  <img <img src="https://img.shields.io/badge/VS%20Code-1.102.0+-black?style=for-the-badge&labelColor=black&color=darkred&logo=visualstudiocode&logoColor=white" alt="VS Code"/>
+  <img src="https://img.shields.io/badge/Copilot-Chat%20Enabled-black?style=for-the-badge&labelColor=black&color=darkgreen&logo=githubcopilot&logoColor=white" alt="Copilot Chat Enabled"/>
+  <img src="https://img.shields.io/badge/Mesh%20VPN-Headscale-black?style=for-the-badge&labelColor=black&color=darkred&logo=tailscale&logoColor=white" alt="Tailscale">
 </div>
+
 <div align="center">
-<a href="https://www.gmail.com">
-  <img src="https://img.shields.io/badge/AscendAI-Core%20AI%20Infrastructure-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="GremlinGPT Fair Use">
-</a>
-<a href="https://github.com/statikfintechllc/AscendAI">
-  <img src="https://img.shields.io/badge/AscendAI-Core%20AI%20Infrastructure-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="GremlinGPT Fair Use">
-</a>
-<a href="https://github.com/statikfintechllc/GremlinGPT">
-  <img src="https://img.shields.io/badge/GremlinGPT-Recursive%20AI%20System-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="GremlinGPT Fair Use">
-</a>
-</div>
-<div align="center">
-  <img src="https://img.shields.io/badge/MIT%20Open-Usage-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="GremlinGPT Fair Use">
-</div>
 
 # 🚀 Statik-Server
 **Sovereign AI Development Environment with Mesh VPN**
+
+  <img src="https://img.shields.io/badge/MIT%20Open-Usage-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="GremlinGPT Fair Use">
+</div>
 
 Transform any machine into a powerful, globally accessible AI development environment with one command.
 
@@ -328,24 +320,6 @@ Comprehensive documentation in [`docs/`](./docs/):
   </a>
   <a href="tel:+16202669837">
   <img src="https://img.shields.io/badge/+1%20620%20266%209837-darkred?style=for-the-badge&logo=phone&logoColor=gold"/>
-  </a>
-</div>
-
-<div align="center">
-  <a href="https://github.com/statikfintechllc/AscendAI/blob/master/About Us/LICENSE.md">
-  <img src="https://img.shields.io/badge/FAIR%20USE-black?style=for-the-badge&logo=dragon&logoColor=gold" alt="Fair Use License"/>
-  </a>
-  <a href="https://github.com/statikfintechllc/AscendAI/blob/master/About Us/LICENSE.md">
-  <img src="https://img.shields.io/badge/GREMLINGPT%20v1.0.3-darkred?style=for-the-badge&logo=dragon&logoColor=gold" alt="GremlinGPT License"/>
-  </a>
-</div>
-
-<div align="center">
-  <a href="https://github.com/statikfintechllc/AscendAI/blob/master/About Us/WHY_GREMLINGPT.md">
-  <img src="https://img.shields.io/badge/Why-black?style=for-the-badge&logo=dragon&logoColor=gold" alt="Why"/>
-  </a>
-  <a href="https://github.com/statikfintechllc/AscendAI/blob/master/About Us/WHY_GREMLINGPT.md">
-  <img src="https://img.shields.io/badge/GremlinGPT-darkred?style=for-the-badge&logo=dragon&logoColor=gold" alt="GremlinGPT"/>
   </a>
 </div>
 
