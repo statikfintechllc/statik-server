@@ -47,6 +47,20 @@ log() { echo -e "${GREEN}✅ $1${NC}"; }
 warn() { echo -e "${YELLOW}⚠️  $1${NC}"; }
 error() { echo -e "${RED}❌ $1${NC}"; exit 1; }
 
+# Open required ports for global access
+open_ports() {
+    local ports=(8443 50443 3478)
+    if command -v ufw >/dev/null 2>&1; then
+        for port in "${ports[@]}"; do
+            if ! sudo ufw status | grep -q "$port/tcp"; then
+                echo -e "${CYAN}🔧 Opening port $port/tcp with ufw...${NC}"
+                sudo ufw allow "$port/tcp" || warn "Failed to open port $port/tcp with ufw."
+            fi
+        done
+    else
+        warn "ufw not found. Please ensure ports 8443, 50443, and 3478 are open in your firewall manually."
+    fi
+}
 # Ensure directories exist
 mkdir -p "$STATIK_HOME"/{config,keys,logs,data,extensions}
 
@@ -311,6 +325,7 @@ main() {
     echo "╚══════════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
     
+    open_ports
     check_dependencies
     check_global_access
     start_mesh

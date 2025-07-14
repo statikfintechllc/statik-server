@@ -1,4 +1,4 @@
-# !/usr/bin/env bash
+#!/usr/bin/env bash
 # Statik-Server One-Command Installer
 # Usage: ./install.sh
 # Creates a fully self-installing statik-server environment with mesh VPN, VS Code, and GitHub Copilot
@@ -48,9 +48,31 @@ print_header() {
     echo -e "${NC}"
 }
 
-git clone https://github.com/statikfintechllc/statik-server.git
-cd statik-server
 
+# Update or Clone the repository
+cd "$HOME"
+if [[ -d "statik-server" ]]; then
+    echo -e "${YELLOW}⚠️  Updating existing statik-server repository...${NC}"
+    cd statik-server
+    git pull origin master
+    if [[ $? -ne 0 ]]; then
+        echo -e "${RED}❌ Failed to update statik-server repository. Please check your internet connection or repository status.${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✅ Repository updated successfully!${NC}"
+else
+    echo -e "${BLUE}📥 Cloning statik-server repository...${NC}"
+    git clone https://github.com/statikfintechllc/statik-server.git
+    if [[ $? -ne 0 ]]; then
+        echo -e "${RED}❌ Failed to clone statik-server repository. Please check your internet connection or repository status.${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✅ Repository cloned successfully!${NC}"
+fi
+cd "$HOME/statik-server"
+echo -e "${BLUE}📂 Current directory: $(pwd)${NC}"
+
+# Ensure the scripts directory exists
 # Progress indicator
 progress() {
     local current=$1
@@ -66,6 +88,7 @@ progress() {
     printf " ${CYAN}%s${NC}" "$desc"
 }
 
+
 # Logging
 log() {
     echo -e "${GREEN}✅ $1${NC}"
@@ -80,12 +103,14 @@ error() {
     exit 1
 }
 
+
 # Check if running as root
 check_root() {
     if [[ $EUID -eq 0 ]]; then
         error "Do not run this script as root. It will request sudo when needed."
     fi
 }
+
 
 # Check system requirements
 check_requirements() {
@@ -112,6 +137,7 @@ check_requirements() {
     
     progress 2 20 "System requirements check complete"
 }
+
 
 # Install system dependencies
 install_dependencies() {
@@ -145,6 +171,7 @@ install_dependencies() {
     progress 4 20 "Dependencies installation complete"
 }
 
+
 # Create directory structure
 setup_directories() {
     progress 5 20 "Setting up directory structure..."
@@ -160,6 +187,7 @@ setup_directories() {
     
     progress 6 20 "Directory structure created"
 }
+
 
 # Download VS Code CLI
 install_vscode_cli() {
@@ -183,6 +211,8 @@ install_vscode_cli() {
     
     progress 8 20 "VS Code CLI installation complete"
 }
+
+
 
 # Build mesh VPN (headscale)
 build_mesh() {
@@ -228,6 +258,7 @@ build_mesh() {
     
     progress 10 20 "Mesh VPN build complete"
 }
+
 
 # Generate certificates and keys
 generate_keys() {
@@ -288,6 +319,7 @@ generate_keys() {
     
     progress 12 20 "Key generation complete"
 }
+
 
 # Initialize mesh VPN database
 initialize_mesh() {
@@ -361,6 +393,7 @@ EOF
     
     progress 16 20 "GitHub Copilot configuration complete"
 }
+
 
 # Create launch scripts
 create_launch_scripts() {
@@ -453,7 +486,6 @@ main() {
     setup_copilot
     create_launch_scripts
     create_desktop_integration
-    organize_docs
     create_readme
     
     echo -e "\n${GREEN}🎉 INSTALLATION COMPLETE! 🎉${NC}\n"
