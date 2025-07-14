@@ -24,20 +24,19 @@
 </div>
 
 <div align="center">
-  <img src="https://img.shields.io/badge/Statik--Server-Sovereign%20AI%20Development-darkred?style=for-the-badge&logo=dragon&logoColor=gold" alt="Statik-Server"/>
-  <img src="https://img.shields.io/badge/Status-v1.0.0-darkred?style=for-the-badge" alt="Status"/>
-  <img src="https://img.shields.io/badge/VS%20Code-1.102.0+-blue?style=for-the-badge&logo=visualstudiocode" alt="VS Code"/>
-  <img src="https://img.shields.io/badge/Mesh%20VPN-Headscale-green?style=for-the-badge&logo=tailscale" alt="Headscale"/>
+  <img src="https://img.shields.io/badge/Status-v1.0.0-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="GremlinGPT Fair Use">
+  <img src="https://img.shields.io/badge/VS%20Code-1.102.0+-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="VS Code"/>
+  <img src="https://img.shields.io/badge/Mesh%20VPN-Headscale-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="Tailscale">
 </div>
 <div align="center">
 <a href="https://www.gmail.com">
-  <img src="https://img.shields.io/badge/Ask-black?style=for-the-badge&logo=dragon&logoColor=gold" alt="Ask"/>
+  <img src="https://img.shields.io/badge/AscendAI-Core%20AI%20Infrastructure-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="GremlinGPT Fair Use">
 </a>
 <a href="https://github.com/statikfintechllc/AscendAI">
-  <img src="https://img.shields.io/badge/AscendAI-Core%20AI%20Infrastructure-purple?style=for-the-badge&logo=brain&logoColor=white" alt="AscendAI"/>
+  <img src="https://img.shields.io/badge/AscendAI-Core%20AI%20Infrastructure-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="GremlinGPT Fair Use">
 </a>
 <a href="https://github.com/statikfintechllc/GremlinGPT">
-  <img src="https://img.shields.io/badge/GremlinGPT-Recursive%20AI%20System-red?style=for-the-badge&logo=robot&logoColor=white" alt="GremlinGPT"/>
+  <img src="https://img.shields.io/badge/GremlinGPT-Recursive%20AI%20System-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="GremlinGPT Fair Use">
 </a>
 </div>
 <div align="center">
