@@ -34,7 +34,7 @@ test/test-results
 
 # Configuration files with sensitive data
 **/keys/**
-**/config/headscale.yaml
+**/config/tailscale.yaml
 **/config/mesh-connection.json
 
 # Logs and runtime data
@@ -61,7 +61,7 @@ test/test-results
 
 # Mesh VPN specific
 tailscale.log
-headscale.db*
+tailscale.db*
 noise.key
 preauth.key
 api.key

@@ -1,6 +1,6 @@
 # Statik Mesh VPN Overview
 
-Statik-Server includes an integrated mesh VPN based on Headscale, providing secure global access to your development environment.
+Statik-Server includes an integrated mesh VPN based on Tailscale, providing secure global access to your development environment.
 
 ## Features
 

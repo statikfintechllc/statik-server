@@ -40,7 +40,7 @@ print_header() {
     echo "║              Sovereign AI Development Environment                ║"
     echo "║                                                                  ║"
     echo "║  ✨ Official VS Code Server + GitHub Copilot                     ║"
-    echo "║  🌐 Mesh VPN with Headscale Integration                          ║"
+    echo "║  🌐 Mesh VPN with Tailscale Integration                          ║"
     echo "║  🔐 Auto-generated Keys & Certificates                           ║"
     echo "║  📱 Mobile Access via QR Codes                                   ║"
     echo "║  🎯 Zero Configuration Required                                  ║"
@@ -214,13 +214,13 @@ install_vscode_cli() {
 
 
 
-# Build mesh VPN (headscale)
+# Build mesh VPN (tailscale)
 build_mesh() {
     progress 9 20 "Building mesh VPN components..."
     
-    # Check if headscale already exists
-    if [[ -f "./lib/headscale" ]]; then
-        echo "  ✅ Headscale binary already exists"
+    # Check if tailscale already exists
+    if [[ -f "./lib/tailscale" ]]; then
+        echo "  ✅ Tailscale binary already exists"
         progress 10 20 "Mesh VPN components ready"
         return 0
     fi
@@ -230,29 +230,38 @@ build_mesh() {
         cd ./internal/mesh
         if [[ -f "go.mod" ]]; then
             echo "  🔧 Compiling mesh VPN from source..."
-            go build -o ../../lib/headscale ./cmd/headscale >/dev/null 2>&1
-            go build -o ../../lib/statik-meshd ./cmd/headscale >/dev/null 2>&1
+            go build -o ../../lib/tailscale ./cmd/tailscale >/dev/null 2>&1
+            go build -o ../../lib/statik-meshd ./cmd/tailscale >/dev/null 2>&1
         fi
         cd - >/dev/null
     else
-        # Download precompiled headscale if not available
-        echo "  📥 Downloading headscale binary..."
-        local headscale_version="0.26.1"
-        local download_url="https://github.com/juanfont/headscale/releases/download/v${headscale_version}/headscale_${headscale_version}_linux_amd64"
+        # Download precompiled tailscale if not available
+        echo "  📥 Downloading tailscale binary..."
+        local tailscale_version="1.76.1"
+        local download_url="https://pkgs.tailscale.com/stable/tailscale_${tailscale_version}_amd64.tgz"
         
         if command -v curl >/dev/null 2>&1; then
-            curl -L -o "./lib/headscale" "$download_url" >/dev/null 2>&1
+            curl -L -o "/tmp/tailscale.tgz" "$download_url" >/dev/null 2>&1
+            tar -xzf "/tmp/tailscale.tgz" -C "/tmp" >/dev/null 2>&1
+            cp "/tmp/tailscale_${tailscale_version}_amd64/tailscale" "./lib/tailscale" >/dev/null 2>&1
+            cp "/tmp/tailscale_${tailscale_version}_amd64/tailscaled" "./lib/tailscaled" >/dev/null 2>&1
+            rm -rf "/tmp/tailscale.tgz" "/tmp/tailscale_${tailscale_version}_amd64" >/dev/null 2>&1
         elif command -v wget >/dev/null 2>&1; then
-            wget -O "./lib/headscale" "$download_url" >/dev/null 2>&1
+            wget -O "/tmp/tailscale.tgz" "$download_url" >/dev/null 2>&1
+            tar -xzf "/tmp/tailscale.tgz" -C "/tmp" >/dev/null 2>&1
+            cp "/tmp/tailscale_${tailscale_version}_amd64/tailscale" "./lib/tailscale" >/dev/null 2>&1
+            cp "/tmp/tailscale_${tailscale_version}_amd64/tailscaled" "./lib/tailscaled" >/dev/null 2>&1
+            rm -rf "/tmp/tailscale.tgz" "/tmp/tailscale_${tailscale_version}_amd64" >/dev/null 2>&1
         else
-            echo "  ⚠️  Could not download headscale (no curl/wget), mesh VPN will be disabled"
+            echo "  ⚠️  Could not download tailscale (no curl/wget), mesh VPN will be disabled"
             progress 10 20 "Mesh VPN build skipped"
             return 0
         fi
         
-        if [[ -f "./lib/headscale" ]]; then
-            chmod +x "./lib/headscale"
-            echo "  ✅ Headscale binary downloaded and ready"
+        if [[ -f "./lib/tailscale" ]]; then
+            chmod +x "./lib/tailscale"
+            chmod +x "./lib/tailscaled"
+            echo "  ✅ Tailscale binary downloaded and ready"
         fi
     fi
     
@@ -293,11 +302,12 @@ generate_keys() {
         openssl rand -hex 16 > "$cert_dir/api.key"
     fi
     
-    # Generate noise private key for headscale
+    # Generate noise private key for tailscale
     if [[ ! -f "$cert_dir/noise.key" ]]; then
         echo "  🔑 Generating noise private key for mesh VPN..."
-        if [[ -f "lib/headscale" ]]; then
-            ./lib/headscale generate private-key > "$cert_dir/noise.key"
+        if [[ -f "lib/tailscale" ]]; then
+            # Use tailscale's built-in key generation or create a random key
+            openssl rand -hex 32 > "$cert_dir/noise.key"
         else
             # Fallback: generate a random key with proper format
             echo "privkey:$(openssl rand -hex 32)" > "$cert_dir/noise.key"
@@ -325,42 +335,25 @@ generate_keys() {
 initialize_mesh() {
     progress 13 20 "Initializing mesh VPN database..."
     
-    if [[ -f "$STATIK_HOME/../lib/headscale" ]]; then
-        echo "  🗄️ Setting up headscale database..."
+    if [[ -f "$STATIK_HOME/../lib/tailscale" ]]; then
+        echo "  🗄️ Setting up tailscale configuration..."
         
-        # Create headscale config directory if it doesn't exist
+        # Create tailscale config directory if it doesn't exist
         mkdir -p "$STATIK_HOME/config"
         
-        # Initialize database by running headscale with minimal config
-        cat > "$STATIK_HOME/config/temp-headscale.yaml" << EOF
-server_url: https://localhost:8443
-listen_addr: 0.0.0.0:50443
-metrics_listen_addr: 127.0.0.1:9090
-private_key_path: $STATIK_HOME/keys/server.key
-tls_cert_path: $STATIK_HOME/keys/server.crt
-db_type: sqlite3
-db_path: $STATIK_HOME/data/headscale.db
-log:
-  level: info
-ip_prefixes:
-  - fd7a:115c:a1e0::/48
-  - 100.64.0.0/10
-dns_config:
-  magic_dns: true
-  base_domain: statik.local
+        # Create tailscale daemon configuration
+        cat > "$STATIK_HOME/config/tailscaled.state" << EOF
+{
+  "version": 1,
+  "authkey": "",
+  "hostname": "statik-server"
+}
 EOF
         
-        # Initialize database
-        if "$STATIK_HOME/../lib/headscale" -c "$STATIK_HOME/config/temp-headscale.yaml" users create statik >/dev/null 2>&1; then
-            echo "  ✅ Mesh database initialized with default user 'statik'"
-        else
-            echo "  ⚠️ Mesh database will be initialized on first startup"
-        fi
-        
-        # Clean up temp config
-        rm -f "$STATIK_HOME/config/temp-headscale.yaml"
+        # The tailscale daemon will be configured on first startup
+        echo "  ✅ Tailscale configuration initialized"
     else
-        echo "  ⚠️ Headscale not found, mesh will be configured on first run"
+        echo "  ⚠️ Tailscale not found, mesh will be configured on first run"
     fi
     
     progress 14 20 "Mesh VPN initialization complete"

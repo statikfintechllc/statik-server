@@ -40,9 +40,9 @@ check_dir "internal/mesh"
 check_dir "src/node/statik"
 
 # Check mesh components
-check_file "internal/mesh/headscale"
-check_file "internal/mesh/headscale.yaml"
-check_file "internal/mesh/headscale.sh"
+check_file "internal/mesh/tailscale"
+check_file "internal/mesh/tailscale.yaml"
+check_file "internal/mesh/tailscale.sh"
 
 # Check Statik modules
 check_file "src/node/statik/copilot-auth.ts"
@@ -81,7 +81,7 @@ missing_files=0
 total_files=0
 
 for file in "package.json" "startup.sh" "Dockerfile" "quick-build.sh" \
-           "internal/mesh/headscale" "internal/mesh/headscale.yaml" "internal/mesh/headscale.sh" \
+           "internal/mesh/tailscale" "internal/mesh/tailscale.yaml" "internal/mesh/tailscale.sh" \
            "src/node/statik/copilot-auth.ts" "src/node/statik/memory-router.ts"; do
     total_files=$((total_files + 1))
     if [ ! -f "$file" ]; then

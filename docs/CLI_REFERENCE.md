@@ -16,7 +16,7 @@ statik-cli start [--daemon]
 
 **What it does:**
 - Starts VS Code server on port 8080
-- Initializes mesh VPN (Headscale) on port 50443
+- Initializes mesh VPN (Tailscale) on port 50443
 - Sets up HTTPS proxy on port 8443
 - Opens required firewall ports
 - Generates QR codes for mobile access

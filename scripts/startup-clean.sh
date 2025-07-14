@@ -1,6 +1,6 @@
 #!/bin/bash
 # Clean VS Code Broadcasting Server
-# Self-hosted domain with headscale mesh networking
+# Self-hosted domain with tailscale mesh networking
 
 set -e
 
@@ -27,18 +27,18 @@ if [[ ! -f "$CERT_DIR/$DOMAIN_NAME.crt" ]]; then
     ./scripts/domain-setup.sh
 fi
 
-# 2. Start headscale mesh VPN in background
-echo "🌐 Starting headscale mesh VPN..."
-if [[ -f "$MESH_DIR/headscale" ]]; then
+# 2. Start tailscale mesh VPN in background
+echo "🌐 Starting tailscale mesh VPN..."
+if [[ -f "$MESH_DIR/tailscale" ]]; then
     cd "$MESH_DIR"
-    ./headscale.sh > "$HOME/.statik/logs/headscale.log" 2>&1 &
+    ./tailscale.sh > "$HOME/.statik/logs/tailscale.log" 2>&1 &
     MESH_PID=$!
     echo $MESH_PID > "$HOME/.statik/mesh.pid"
-    echo "✅ Headscale started (PID: $MESH_PID)"
+    echo "✅ Tailscale started (PID: $MESH_PID)"
     cd "$STATIK_ROOT"
     sleep 3
 else
-    echo "⚠️  Headscale not found, continuing without mesh..."
+    echo "⚠️  Tailscale not found, continuing without mesh..."
 fi
 
 # 3. Setup GitHub authentication for Copilot
@@ -129,7 +129,7 @@ echo "🎯 Features Active:"
 echo "   ✅ Official VS Code 1.102.0+ with full feature set"
 echo "   ✅ Self-signed domain broadcasting ($DOMAIN_NAME)"
 echo "   ✅ HTTPS encryption with custom certificates"
-echo "   ✅ Headscale mesh VPN for global secure access"
+echo "   ✅ Tailscale mesh VPN for global secure access"
 echo "   ✅ GitHub Copilot Chat integration (if token set)"
 echo "   ✅ VS Code extensions and marketplace access"
 echo "   ✅ Broadcasting content from lib/ directory"

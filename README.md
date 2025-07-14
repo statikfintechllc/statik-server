@@ -27,7 +27,7 @@
   <img src="https://img.shields.io/badge/Status-v1.0.0-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="Status">
   <img src="https://img.shields.io/badge/VS%20Code-1.102.0+-black?style=for-the-badge&labelColor=black&color=darkred&logo=visualstudiocode&logoColor=white" alt="VS Code"/>
   <img src="https://img.shields.io/badge/Copilot-Chat%20Enabled-black?style=for-the-badge&labelColor=black&color=darkgreen&logo=githubcopilot&logoColor=white" alt="Copilot Chat Enabled"/>
-  <img src="https://img.shields.io/badge/Mesh%20VPN-Headscale-black?style=for-the-badge&labelColor=black&color=darkred&logo=tailscale&logoColor=white" alt="Mesh VPN">
+  <img src="https://img.shields.io/badge/Mesh%20VPN-Tailscale-black?style=for-the-badge&labelColor=black&color=darkred&logo=tailscale&logoColor=white" alt="Mesh VPN">
   <img src="https://img.shields.io/badge/MIT%20Open-Usage-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="License">
 </div>
 
@@ -111,7 +111,7 @@ Transform any machine into a powerful, globally accessible AI development enviro
 - **🤖 GitHub Copilot Chat** - Full AI pair programming with official Microsoft integration
 - **💻 Local VS Code** - Open desktop VS Code with `statik-cli code`
 - **🌐 Web VS Code** - Browser-based development environment
-- **🌐 Mesh VPN** - Self-hosted Headscale server with Tailscale client compatibility
+- **🌐 Mesh VPN** - Uses existing Tailscale connection for global access
 - **📡 Global Access** - HTTPS with auto-generated certificates
 - **🔐 Zero Config** - Auto-generated keys & persistent authentication
 - **📱 Mobile Ready** - QR codes for instant access
@@ -162,8 +162,7 @@ Statik-Server combines the best of several technologies to create a sovereign AI
 ### Core Components
 - **VS Code Server**: Official Microsoft VS Code server (v1.102.0+) with full extension support
 - **GitHub Copilot**: Native Microsoft integration for AI pair programming
-- **Headscale**: Self-hosted mesh VPN server (Tailscale-compatible protocol)
-- **Tailscale Client**: Used on devices to connect to your Headscale server
+- **Tailscale**: Mesh VPN for secure global access to your development environment
 - **HTTPS Proxy**: Auto-generated TLS certificates for secure access
 
 ### Mesh VPN Architecture
@@ -171,7 +170,7 @@ Statik-Server combines the best of several technologies to create a sovereign AI
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Your Device   │    │ Statik-Server   │    │  Remote Device  │
 │                 │    │                 │    │                 │
-│ Tailscale Client├────┤ Headscale Server├────┤ Tailscale Client│
+│ Tailscale Client├────┤ Tailscale Client├────┤ Tailscale Client│
 │                 │    │ + VS Code       │    │                 │
 │                 │    │ + Copilot       │    │                 │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
@@ -179,9 +178,9 @@ Statik-Server combines the best of several technologies to create a sovereign AI
 
 **Why this works so well:**
 - **Microsoft-friendly**: Uses official VS Code server and Copilot integration
-- **Self-hosted**: Your Headscale server = no dependency on Tailscale Inc.
-- **Protocol compatible**: Any device with Tailscale can connect to your mesh
-- **Persistent keys**: Auto-generated preauth keys that never expire
+- **Zero-setup mesh**: Leverages existing Tailscale infrastructure
+- **Instant access**: Connect any device already in your Tailscale network
+- **Secure by default**: WireGuard-based encryption with device authentication
 
 ## 📋 System Requirements
 
@@ -194,7 +193,7 @@ Statik-Server combines the best of several technologies to create a sovereign AI
 ### Dependencies (Auto-installed)
 - Git, curl, wget, unzip
 - Node.js 18+ and npm
-- Go 1.21+ (for Headscale compilation)
+- Go 1.21+ (for Tailscale compilation)
 - OpenSSL for certificate generation
 - UFW or iptables for firewall management
 
@@ -282,7 +281,7 @@ Once running, access your development environment via:
 - **HTTPS**: https://localhost:8443
 
 ### 🌍 Global Access (via Mesh VPN)
-- Connect any device with Tailscale to your Headscale server
+- Connect any device with Tailscale to your mesh network
 - Access VS Code from anywhere in the world
 - Secure WireGuard-based tunnel
 
@@ -293,28 +292,33 @@ Once running, access your development environment via:
 
 ## 🌐 Mesh VPN Setup
 
-### 1. Server Side (Automatic)
-Your Statik-Server automatically runs Headscale:
-- Creates persistent preauth keys
-- Generates TLS certificates  
-- Configures DERP relay servers
-- Sets up magic DNS (*.statik.local)
-
-### 2. Connect Devices
-On any device you want to connect:
+### 1. Connect to Tailscale
+Connect your Statik-Server to your existing Tailscale network:
 
 ```bash
-# Install Tailscale client
+# Install Tailscale (if not already installed)
 curl -fsSL https://tailscale.com/install.sh | sh
 
-# Connect to your Headscale server
-sudo tailscale up --login-server https://[your-domain]:8443 --authkey [preauth-key]
+# Connect to your tailnet
+sudo tailscale up
 ```
 
-Get your preauth key with:
+### 2. Access from Any Device
+Once connected to Tailscale, access your Statik-Server from any device in your tailnet:
+
 ```bash
-statik-cli mesh key
+# Get your Tailscale IP
+tailscale ip
+
+# Access VS Code via Tailscale
+# https://[your-tailscale-ip]:8443
 ```
+
+### 3. Add New Devices
+Add new devices to your mesh via the Tailscale admin console:
+- Visit https://login.tailscale.com/admin/machines
+- Add new devices to your tailnet
+- They'll automatically have access to your Statik-Server
 
 ## 🛠️ CLI Commands
 
@@ -339,10 +343,10 @@ statik-cli gui            # Launch interactive GUI
 
 ### Mesh VPN Management
 ```bash
-statik-cli mesh status    # Check mesh status
-statik-cli mesh key       # Generate connection key
-statik-cli mesh devices   # List connected devices
-statik-cli mesh info      # Show mesh configuration
+statik-cli mesh status    # Check Tailscale mesh status
+statik-cli mesh info      # Detailed network information
+tailscale status          # View all devices in mesh
+tailscale ip              # Show your mesh IP address
 ```
 
 ### Configuration
