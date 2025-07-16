@@ -20,6 +20,11 @@ INSTALL_DIR="/opt/statik-server"
 BIN_DIR="$HOME/.local/bin"
 DESKTOP_DIR="$HOME/.local/share/applications"
 ICON_DIR="$HOME/.local/share/icons"
+LOG_FILE="$HOME/.statik-server/logs/install.log"
+
+# Create log directory
+mkdir -p "$(dirname "$LOG_FILE")"
+exec > >(tee -a "$LOG_FILE") 2>&1
 
 # Detect platform
 PLATFORM=""
@@ -76,12 +81,12 @@ echo -e "${BLUE}📂 Current directory: $(pwd)${NC}"
 # Progress indicator
 progress() {
     local current=$1
-    local total=$2
-    local desc=$3
+    local total=40
+    local desc=$2
     local percentage=$((current * 100 / total))
     local bar_length=50
     local filled_length=$((percentage * bar_length / 100))
-    
+
     printf "\r${BLUE}[%3d%%] ${GREEN}" $percentage
     for ((i=0; i<filled_length; i++)); do printf "█"; done
     for ((i=filled_length; i<bar_length; i++)); do printf "░"; done
@@ -91,15 +96,15 @@ progress() {
 
 # Logging
 log() {
-    echo -e "${GREEN}✅ $1${NC}"
+    echo -e "$(date '+%Y-%m-%d %H:%M:%S') ${GREEN}✅ $1${NC}" | tee -a "$LOG_FILE"
 }
 
 warn() {
-    echo -e "${YELLOW}⚠️  $1${NC}"
+    echo -e "$(date '+%Y-%m-%d %H:%M:%S') ${YELLOW}⚠️  $1${NC}" | tee -a "$LOG_FILE"
 }
 
 error() {
-    echo -e "${RED}❌ $1${NC}"
+    echo -e "$(date '+%Y-%m-%d %H:%M:%S') ${RED}❌ $1${NC}" | tee -a "$LOG_FILE"
     exit 1
 }
 
@@ -114,7 +119,7 @@ check_root() {
 
 # Check system requirements
 check_requirements() {
-    progress 1 20 "Checking system requirements..."
+    progress 1 "Checking system requirements..."
     
     # Check for required tools
     local missing_tools=()
@@ -135,13 +140,13 @@ check_requirements() {
         error "Insufficient disk space. Need at least 2GB available."
     fi
     
-    progress 2 20 "System requirements check complete"
+    progress 2 "System requirements check complete"
 }
 
 
 # Install system dependencies
 install_dependencies() {
-    progress 3 20 "Installing system dependencies..."
+    progress 3 "Installing system dependencies..."
     
     if [[ "$PLATFORM" == "linux" ]]; then
         # Detect Linux distribution
@@ -168,13 +173,13 @@ install_dependencies() {
         npm install -g pnpm >/dev/null 2>&1
     fi
     
-    progress 4 20 "Dependencies installation complete"
+    progress 8 "Dependencies installation complete"
 }
 
 
 # Create directory structure
 setup_directories() {
-    progress 5 20 "Setting up directory structure..."
+    progress 9 "Setting up directory structure..."
     
     # Create statik directories
     mkdir -p "$STATIK_HOME"/{config,keys,logs,data,extensions}
@@ -185,13 +190,13 @@ setup_directories() {
     # Create docs directory and move documentation
     mkdir -p docs/{user,development,mesh}
     
-    progress 6 20 "Directory structure created"
+    progress 12 "Directory structure created"
 }
 
 
 # Download VS Code CLI
 install_vscode_cli() {
-    progress 7 20 "Installing VS Code CLI..."
+    progress 13 "Installing VS Code CLI..."
     
     local vscode_dir="./lib"
     mkdir -p "$vscode_dir"
@@ -209,12 +214,12 @@ install_vscode_cli() {
         chmod +x "$vscode_dir/code"
     fi
     
-    progress 8 20 "VS Code CLI installation complete"
+    progress 16 "VS Code CLI installation complete"
 }
 
 # Build all frontend components
 build_frontends() {
-    progress 9 20 "Building frontend components..."
+    progress 17 "Building frontend components..."
     
     # Build Node.js frontends if they exist
     if [[ -d "./src/browser" ]]; then
@@ -246,19 +251,19 @@ build_frontends() {
         fi
     fi
     
-    progress 9 20 "Frontend build complete"
+    progress 20 "Frontend build complete"
 }
 
 
 
 # Build mesh VPN (tailscale)
 build_mesh() {
-    progress 10 20 "Building mesh VPN components..."
+    progress 21 "Building mesh VPN components..."
     
     # Check if tailscale already exists
     if [[ -f "./lib/tailscale" ]]; then
         echo "  ✅ Tailscale binary already exists"
-        progress 10 20 "Mesh VPN components ready"
+        progress 24 "Mesh VPN components ready"
         return 0
     fi
     
@@ -302,13 +307,13 @@ build_mesh() {
         fi
     fi
     
-    progress 11 20 "Mesh VPN build complete"
+    progress 24 "Mesh VPN build complete"
 }
 
 
 # Generate certificates and keys
 generate_keys() {
-    progress 12 20 "Generating certificates and authentication keys..."
+    progress 25 "Generating certificates and authentication keys..."
     
     local cert_dir="$STATIK_HOME/keys"
     local domain_name="statik.local"
@@ -364,13 +369,13 @@ generate_keys() {
     chmod 600 "$cert_dir"/* 2>/dev/null
     echo "  🔒 Key permissions secured"
     
-    progress 13 20 "Key generation complete"
+    progress 28 "Key generation complete"
 }
 
 
 # Initialize mesh VPN database
 initialize_mesh() {
-    progress 14 20 "Initializing mesh VPN database..."
+    progress 29 "Initializing mesh VPN database..."
     
     if [[ -f "$STATIK_HOME/../lib/tailscale" ]]; then
         echo "  🗄️ Setting up tailscale configuration..."
@@ -393,12 +398,12 @@ EOF
         echo "  ⚠️ Tailscale not found, mesh will be configured on first run"
     fi
     
-    progress 15 20 "Mesh VPN initialization complete"
+    progress 32 "Mesh VPN initialization complete"
 }
 
 # Setup GitHub Copilot
 setup_copilot() {
-    progress 16 20 "Setting up GitHub Copilot integration..."
+    progress 33 "Setting up GitHub Copilot integration..."
     
     echo -e "\n${CYAN}🤖 GitHub Copilot Setup${NC}"
     echo "To enable GitHub Copilot Chat in VS Code, you'll need to authenticate."
@@ -421,13 +426,13 @@ setup_copilot() {
 }
 EOF
     
-    progress 17 20 "GitHub Copilot configuration complete"
+    progress 36 "GitHub Copilot configuration complete"
 }
 
 
 # Create launch scripts
 create_launch_scripts() {
-    progress 18 20 "Creating launch scripts..."
+    progress 37 "Creating launch scripts..."
     
     # Create main statik command
     cat > "$BIN_DIR/statik" << 'EOF'
@@ -468,12 +473,12 @@ EOF
 
     chmod +x "$BIN_DIR/statik" "$BIN_DIR/statik-cli"
     
-    progress 19 20 "Launch scripts created"
+    progress 38 "Launch scripts created"
 }
 
 # Create desktop integration
 create_desktop_integration() {
-    progress 20 20 "Setting up desktop integration..."
+    progress 39 "Setting up desktop integration..."
     
     # Copy icon if it exists
     if [[ -f "./app/icons/statik-server.png" ]]; then
@@ -498,7 +503,7 @@ Keywords=vscode;development;mesh;vpn;ai;copilot;
 StartupNotify=true
 EOF
     
-    progress 20 20 "Desktop integration complete"
+    progress 40 "Desktop integration complete"
 }
 
 # Auto-connect to Tailscale and get global access

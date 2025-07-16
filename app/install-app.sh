@@ -1,20 +1,19 @@
 #!/usr/bin/env bash
 # Statik-Server App Installer
-# Creates a GUI launcher and web interface with global access
+# Creates desktop app with state-of-the-art CLI interface
 
 set -e
 
-# Colors
-RED='\033[1;31m'
-GREEN='\033[1;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[1;34m'
-CYAN='\033[1;36m'
-NC='\033[0m'
+APP_NAME="Statik-Server"
+APP_VERSION="v1.0.0"
+APP_COMMENT="Sovereign AI Development Mesh"
+# Get the directory where this script resides
+get_script_dir() {
+    cd "$(dirname "${BASH_SOURCE[0]}")" && pwd
+}
+SCRIPT_DIR="$(get_script_dir)"
 
-STATIK_HOME="$HOME/.statik-server"
-SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-REPO_DIR="$(dirname "$SCRIPT_DIR")"
+# Installation directories
 APPDIR="$HOME/.local/share/applications"
 ICNDIR="$HOME/.local/share/icons"
 BINDIR="$HOME/.local/bin"
@@ -210,13 +209,13 @@ while true; do
                 rm -f "$PID_FILE"
             fi
             
-            # Kill any remaining VS Code, headscale, and socat processes
+            # Kill any remaining VS Code, tailscale, and socat processes
             cleanup_procs=()
             while IFS= read -r line; do
                 if [[ -n "$line" ]]; then
                     cleanup_procs+=("$line")
                 fi
-            done < <(ps aux | grep -E "(serve-web|headscale|socat.*8443|server-main\.js|bootstrap-fork|extensionHost)" | grep -v grep | awk '{print $2}')
+            done < <(ps aux | grep -E "(serve-web|tailscale|socat.*8443|server-main\.js|bootstrap-fork|extensionHost)" | grep -v grep | awk '{print $2}')
             
             if [[ ${#cleanup_procs[@]} -gt 0 ]]; then
                 echo "  🔹 Cleaning up ${#cleanup_procs[@]} related processes..."
@@ -231,7 +230,7 @@ while true; do
                     if [[ -n "$line" ]]; then
                         force_procs+=("$line")
                     fi
-                done < <(ps aux | grep -E "(serve-web|headscale|socat.*8443|server-main\.js|bootstrap-fork|extensionHost)" | grep -v grep | awk '{print $2}')
+                done < <(ps aux | grep -E "(serve-web|tailscale|socat.*8443|server-main\.js|bootstrap-fork|extensionHost)" | grep -v grep | awk '{print $2}')
                 
                 if [[ ${#force_procs[@]} -gt 0 ]]; then
                     echo "  🔹 Force killing ${#force_procs[@]} stubborn processes..."
@@ -297,7 +296,7 @@ while true; do
             echo "Service Ports:"
             echo "  VS Code Server: 8080"
             echo "  Mesh VPN Admin: 8081"
-            echo "  Headscale API: 50443"
+            echo "  Tailscale API: 50443"
             echo ""
             netstat -tlnp 2>/dev/null | grep -E ':(8080|8081|50443)' || echo "  No services listening"
             echo -e "\nPress enter to continue..."
@@ -307,14 +306,14 @@ while true; do
             clear
             echo -e "\033[1;36mMesh VPN Status\033[0m"
             echo "==============="
-            if command -v headscale >/dev/null; then
-                echo "Headscale nodes:"
-                headscale nodes list 2>/dev/null || echo "  No nodes registered"
+            if command -v tailscale >/dev/null; then
+                echo "Tailscale status:"
+                tailscale status 2>/dev/null || echo "  Tailscale not connected"
                 echo ""
-                echo "Auth keys:"
-                headscale preauthkeys list 2>/dev/null || echo "  No auth keys"
+                echo "Current auth key:"
+                echo "  Use 'tailscale login' to connect"
             else
-                echo "  Headscale not found in PATH"
+                echo "  Tailscale not found in PATH"
             fi
             echo -e "\nPress enter to continue..."
             read -r
