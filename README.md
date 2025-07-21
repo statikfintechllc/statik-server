@@ -27,7 +27,6 @@
   <img src="https://img.shields.io/badge/Status-v1.0.0-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="Status">
   <img src="https://img.shields.io/badge/VS%20Code-1.102.0+-black?style=for-the-badge&labelColor=black&color=darkred&logo=visualstudiocode&logoColor=white" alt="VS Code"/>
   <img src="https://img.shields.io/badge/Copilot-Chat%20Enabled-black?style=for-the-badge&labelColor=black&color=darkgreen&logo=githubcopilot&logoColor=white" alt="Copilot Chat Enabled"/>
-  <img src="https://img.shields.io/badge/Mesh%20VPN-Tailscale-black?style=for-the-badge&labelColor=black&color=darkred&logo=tailscale&logoColor=white" alt="Mesh VPN">
   <img src="https://img.shields.io/badge/MIT%20Open-Usage-black?style=for-the-badge&labelColor=black&color=darkred&logo=ghost&logoColor=white" alt="License">
 </div>
 
@@ -73,7 +72,6 @@ Transform any machine into a powerful, globally accessible AI development enviro
 - [Core Features](#-features)
 - [Architecture Overview](#-architecture-overview)
 - [VS Code Integration](#-vs-code-integration)
-- [Mesh VPN Details](#-mesh-vpn-architecture)
 
 </details>
 
@@ -91,7 +89,6 @@ Transform any machine into a powerful, globally accessible AI development enviro
 
 - [User Guide](docs/user/)
 - [Development Guide](docs/development/)
-- [Mesh VPN Guide](docs/mesh/)
 - [API Reference](docs/api/)
 
 </details>
@@ -110,9 +107,6 @@ Transform any machine into a powerful, globally accessible AI development enviro
 - **🤖 GitHub Copilot Chat** - Full AI pair programming with official Microsoft integration
 - **💻 Local VS Code** - Open desktop VS Code with `statik-cli code`
 - **🌐 Web VS Code** - Browser-based development environment
-- **🌐 Mesh VPN** - Uses existing Tailscale connection for global access
-- **📡 Global Access** - HTTPS with auto-generated certificates
-- **🔐 Zero Config** - Auto-generated keys & persistent authentication
 - **📱 Mobile Ready** - QR codes for instant access
 - **⚡ VS Code 1.102.0+** - Official Microsoft server
 - **🎯 One Command** - Complete environment in minutes
@@ -128,9 +122,7 @@ That's it! The installer handles everything:
 - Detects your platform (Linux/macOS)
 - Installs all dependencies
 - Downloads VS Code CLI
-- Builds mesh VPN
-- Generates certificates
-- Sets up GitHub Copilot
+- You sign in with Github to Set up GitHub Copilot(normal vscode shananighans)
 - Creates desktop integration
 
 ## ⚡ Launch Commands
@@ -161,25 +153,6 @@ Statik-Server combines the best of several technologies to create a sovereign AI
 ### Core Components
 - **VS Code Server**: Official Microsoft VS Code server (v1.102.0+) with full extension support
 - **GitHub Copilot**: Native Microsoft integration for AI pair programming
-- **Tailscale**: Mesh VPN for secure global access to your development environment
-- **HTTPS Proxy**: Auto-generated TLS certificates for secure access
-
-### Mesh VPN Architecture
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Your Device   │    │ Statik-Server   │    │  Remote Device  │
-│                 │    │                 │    │                 │
-│ Tailscale Client├────┤ Tailscale Client├────┤ Tailscale Client│
-│                 │    │ + VS Code       │    │                 │
-│                 │    │ + Copilot       │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
-**Why this works so well:**
-- **Microsoft-friendly**: Uses official VS Code server and Copilot integration
-- **Zero-setup mesh**: Leverages existing Tailscale infrastructure
-- **Instant access**: Connect any device already in your Tailscale network
-- **Secure by default**: WireGuard-based encryption with device authentication
 
 ## 📋 System Requirements
 
@@ -289,36 +262,6 @@ Once running, access your development environment via:
 - Install Tailscale on mobile device
 - Connect to your development environment
 
-## 🌐 Mesh VPN Setup
-
-### 1. Connect to Tailscale
-Connect your Statik-Server to your existing Tailscale network:
-
-```bash
-# Install Tailscale (if not already installed)
-curl -fsSL https://tailscale.com/install.sh | sh
-
-# Connect to your tailnet
-sudo tailscale up
-```
-
-### 2. Access from Any Device
-Once connected to Tailscale, access your Statik-Server from any device in your tailnet:
-
-```bash
-# Get your Tailscale IP
-tailscale ip
-
-# Access VS Code via Tailscale
-# https://[your-tailscale-ip]:8443
-```
-
-### 3. Add New Devices
-Add new devices to your mesh via the Tailscale admin console:
-- Visit https://login.tailscale.com/admin/machines
-- Add new devices to your tailnet
-- They'll automatically have access to your Statik-Server
-
 ## 🛠️ CLI Commands
 
 The `statik-cli` provides complete control over your environment:
@@ -340,14 +283,6 @@ statik-cli open           # Open in browser
 statik-cli gui            # Launch interactive GUI
 ```
 
-### Mesh VPN Management
-```bash
-statik-cli mesh status    # Check Tailscale mesh status
-statik-cli mesh info      # Detailed network information
-tailscale status          # View all devices in mesh
-tailscale ip              # Show your mesh IP address
-```
-
 ### Configuration
 ```bash
 statik-cli config token   # Set GitHub token
@@ -361,6 +296,10 @@ statik-cli commit -m "msg" # Git commit
 statik-cli push            # Git push
 statik-cli sync -m "msg"   # Add, commit, push
 ```
+
+---
+
+### Other Shananighans:
 
 <div align="center">
   <a href="https://medium.com/@statikfintechllc">
@@ -462,8 +401,8 @@ statik-cli sync -m "msg"   # Add, commit, push
 **Ready to code from anywhere with AI assistance? Install now and start building the future!** 🚀
 ## 🔗 Repository
 
-- **GitHub**: https://github.com/statikfintechllc/AscendNet
-- **Issues**: https://github.com/statikfintechllc/AscendNet/issues
+- Click here to see main [**GitHub**](https://github.com/statikfintechllc/Ascend-Institute)
+- Click here for [**Issues**](https://github.com/statikfintechllc/statik-server/issues)
 - **License**: MIT
 
 ---
