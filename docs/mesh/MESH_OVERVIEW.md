@@ -27,14 +27,26 @@ The mesh is automatically configured during installation. No manual setup requir
 1. Generate a preauth key:
 ```bash
 statik-cli mesh key
-```
+# Local Development Environment
 
-2. Connect your device:
+This documentation has been updated to reflect the removal of Tailscale mesh networking.
+
+## Local Access
+
+The Statik-Server now operates in local development mode.
+
+1. Start the server:
 ```bash
-tailscale up --login-server https://[server]:8443 --authkey [key]
+./startall.sh
 ```
 
-3. Access your development environment from anywhere!
+2. Connect your device locally:
+```bash
+# Access via local network
+http://[server-ip]:8080
+```
+
+3. Access your development environment from your local network!
 
 ## Security
 

@@ -92,11 +92,11 @@ GitHub Copilot works in both web and local VS Code:
 Connect other devices to your development mesh:
 
 ```bash
-# Generate preauth key
-statik-cli mesh key
+# Access development environment locally
+statik-cli status
 
-# Connect device
-tailscale up --login-server https://[your-domain]:8443 --authkey [key]
+# Connect device from local network
+# Access via: http://[server-ip]:8080
 ```
 
 ## Troubleshooting
