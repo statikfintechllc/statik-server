@@ -1,3 +1,59 @@
+# Build VS Code from source
+build_vscode() {
+    progress 14 "Building VS Code from source..."
+    local vscode_dir="./lib/vscode"
+    if [[ -d "$vscode_dir" ]]; then
+        echo "  🔧 Installing VS Code dependencies..."
+        cd "$vscode_dir"
+        if command -v pnpm >/dev/null 2>&1; then
+            pnpm install || npm install
+        else
+            npm install
+        fi
+        echo "  🔧 Compiling VS Code..."
+        if command -v pnpm >/dev/null 2>&1; then
+            pnpm run compile || npm run compile
+        else
+            npm run compile
+        fi
+        cd - >/dev/null
+        echo "  ✅ VS Code build complete."
+    else
+        warn "VS Code source directory not found at $vscode_dir. Skipping build."
+    fi
+    progress 15 "VS Code build finished"
+}
+
+# Build Tailscale from source
+build_tailscale() {
+    progress 16 "Building Tailscale from source..."
+    local tailscale_dir="./lib/vscode/tailscale"
+    if [[ -d "$tailscale_dir" ]]; then
+        cd "$tailscale_dir"
+        echo "  🔧 Building Tailscale binaries..."
+        if [[ -f "build_dist.sh" ]]; then
+            ./build_dist.sh tailscale.com/cmd/tailscale
+            ./build_dist.sh tailscale.com/cmd/tailscaled
+        elif [[ -f "Makefile" ]]; then
+            make
+        else
+            go build -o tailscale ./cmd/tailscale
+            go build -o tailscaled ./cmd/tailscaled
+        fi
+        # Copy binaries to lib for integration
+        if [[ -f "tailscale" ]]; then
+            cp tailscale ../../../lib/tailscale
+        fi
+        if [[ -f "tailscaled" ]]; then
+            cp tailscaled ../../../lib/tailscaled
+        fi
+        cd - >/dev/null
+        echo "  ✅ Tailscale build complete."
+    else
+        warn "Tailscale source directory not found at $tailscale_dir. Skipping build."
+    fi
+    progress 17 "Tailscale build finished"
+}
 #!/usr/bin/env bash
 # Statik-Server One-Command Installer
 # Usage: ./install.sh
@@ -539,6 +595,8 @@ main() {
     install_dependencies
     setup_directories
     install_vscode_cli
+    build_vscode
+    build_tailscale
     build_frontends
     build_mesh
     generate_keys

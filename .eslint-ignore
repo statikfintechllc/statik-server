@@ -1,0 +1,13 @@
+# Ignore files for ESLint
+node_modules/
+build/
+dist/
+coverage/
+*.min.js
+*.bundle.js
+*.lock
+*.log
+*.tmp
+*.bak
+.vscode/
+.git/

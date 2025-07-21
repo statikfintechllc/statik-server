@@ -82,7 +82,6 @@ Transform any machine into a powerful, globally accessible AI development enviro
 
 - [Access Methods](#-access-your-environment)
 - [Local Development](#-ai-powered-development)
-- [Mesh VPN Setup](#-mesh-vpn-setup)
 - [CLI Commands](#-cli-commands)
 
 </details>
