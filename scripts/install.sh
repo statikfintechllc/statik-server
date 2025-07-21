@@ -472,7 +472,7 @@ EOF
     progress 40 "Desktop integration complete"
 }
 
-# Auto-connect to Tailscale and get global access
+# Setup local development access
 setup_global_access() {
     echo -e "\n${CYAN}🌍 Setting up local development access...${NC}"
     
