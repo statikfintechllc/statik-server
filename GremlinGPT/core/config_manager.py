@@ -77,7 +77,6 @@ class NetworkConfig:
     vscode_port: int = 8080
     gremlingpt_port: int = 7777
     api_port: int = 8000
-    tailscale_enabled: bool = True
     ngrok_enabled: bool = False
     cors_origins: List[str] = field(default_factory=lambda: ["*"])
     ssl_enabled: bool = False
@@ -250,7 +249,6 @@ class UnifiedConfigurationManager:
                 "GITHUB_TOKEN": ("copilot", "github_token"),
                 "STATIK_DEBUG": ("system", "debug"),
                 "STATIK_LOG_LEVEL": ("system", "log_level"),
-                "TAILSCALE_AUTHKEY": ("network", "tailscale_authkey"),
                 "NGROK_AUTHTOKEN": ("network", "ngrok_authtoken")
             }
             

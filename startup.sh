@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Startup script for Tailscale tunneling integration
-# This script handles the explicit Tailscale tunnel setup for frontend and VS Code
+# Startup script for local development environment
+# This script handles the local setup for frontend and VS Code services
 
 set -e
 
@@ -116,79 +116,40 @@ start_vscode_server() {
     fi
 }
 
-# Create and activate Tailscale tunnel
-create_tailscale_tunnel() {
-    log "Creating and activating Tailscale tunnels..."
+# Create local configuration
+create_local_config() {
+    log "Creating local configuration..."
 
-    # Check if Tailscale is installed
-    if ! command -v tailscale >/dev/null 2>&1; then
-        warn "Tailscale not found. Installing..."
-        curl -fsSL https://tailscale.com/install.sh | sh
-    fi
-
-    # Check if already connected
-    local tailscale_ip
-    tailscale_ip=$(tailscale ip -4 2>/dev/null | head -n1)
-
-    if [[ -z "$tailscale_ip" ]]; then
-        log "Connecting to Tailscale..."
-        if [[ -n "$TAILSCALE_AUTHKEY" ]]; then
-            tailscale up --authkey="$TAILSCALE_AUTHKEY" --accept-routes --accept-dns=false
-        else
-            log "Starting interactive Tailscale login..."
-            echo -e "${YELLOW}Please complete authentication in your browser${NC}"
-            tailscale up --accept-routes --accept-dns=false
-        fi
-
-        # Get IP after connection
-        tailscale_ip=$(tailscale ip -4 2>/dev/null | head -n1)
-    fi
-
-    if [[ -n "$tailscale_ip" ]]; then
-        echo "$tailscale_ip" > "$STATIK_HOME/tailscale_ip"
-        success "Tailscale connected: $tailscale_ip"
-
-        # Document tunnel URLs
-        log "Frontend tunnel URL: http://$tailscale_ip:$FRONTEND_PORT"
-        log "VS Code tunnel URL: http://$tailscale_ip:$VSCODE_PORT"
-
-        # Save tunnel configuration
-        cat > "$STATIK_HOME/tunnel-config.json" << EOF
+    # Save local configuration
+    cat > "$STATIK_HOME/tunnel-config.json" << EOF
 {
-    "tailscale_ip": "$tailscale_ip",
+    "local_ip": "localhost",
     "frontend": {
         "port": $FRONTEND_PORT,
-        "url": "http://$tailscale_ip:$FRONTEND_PORT",
-        "tunnel_active": true
+        "url": "http://localhost:$FRONTEND_PORT",
+        "local_active": true
     },
     "vscode": {
         "port": $VSCODE_PORT,
-        "url": "http://$tailscale_ip:$VSCODE_PORT",
-        "tunnel_active": true
+        "url": "http://localhost:$VSCODE_PORT",
+        "local_active": true
     },
     "created": "$(date -Iseconds)"
 }
 EOF
 
-        return 0
-    else
-        error "Failed to establish Tailscale connection"
-    fi
+    success "Local configuration created"
+    log "Frontend URL: http://localhost:$FRONTEND_PORT"
+    log "VS Code URL: http://localhost:$VSCODE_PORT"
+
+    return 0
 }
 
 # Generate QR code for frontend access
 generate_qr_code() {
     log "Generating QR code for frontend access..."
 
-    local tailscale_ip
-    tailscale_ip=$(cat "$STATIK_HOME/tailscale_ip" 2>/dev/null)
-
-    if [[ -z "$tailscale_ip" ]]; then
-        warn "Cannot generate QR code: Tailscale IP not available"
-        return 1
-    fi
-
-    local frontend_url="http://$tailscale_ip:$FRONTEND_PORT"
+    local frontend_url="http://localhost:$FRONTEND_PORT"
 
     # Install qrencode if not available
     if ! command -v qrencode >/dev/null 2>&1; then
@@ -219,35 +180,30 @@ generate_qr_code() {
     return 0
 }
 
-# Update frontend configuration with tunnel URLs
-update_frontend_tunnel_config() {
-    log "Updating frontend configuration for tunnel access..."
+# Update frontend configuration for local access
+update_frontend_local_config() {
+    log "Updating frontend configuration for local access..."
 
-    local tailscale_ip
-    tailscale_ip=$(cat "$STATIK_HOME/tailscale_ip" 2>/dev/null)
-
-    if [[ -n "$tailscale_ip" ]]; then
-        # Create runtime configuration for frontend
-        mkdir -p "$STATIK_HOME/config"
-        cat > "$STATIK_HOME/config/runtime.json" << EOF
+    # Create runtime configuration for frontend
+    mkdir -p "$STATIK_HOME/config"
+    cat > "$STATIK_HOME/config/runtime.json" << EOF
 {
-    "mode": "production",
-    "tunneling": {
+    "mode": "development",
+    "local": {
         "enabled": true,
-        "provider": "tailscale",
-        "tailscale_ip": "$tailscale_ip"
+        "host": "localhost"
     },
     "services": {
         "frontend": {
-            "url": "http://$tailscale_ip:$FRONTEND_PORT",
+            "url": "http://localhost:$FRONTEND_PORT",
             "port": $FRONTEND_PORT,
-            "tunnel_active": true
+            "local_active": true
         },
         "vscode": {
-            "url": "http://$tailscale_ip:$VSCODE_PORT",
+            "url": "http://localhost:$VSCODE_PORT",
             "port": $VSCODE_PORT,
-            "tunnel_active": true,
-            "iframe_src": "http://$tailscale_ip:$VSCODE_PORT"
+            "local_active": true,
+            "iframe_src": "http://localhost:$VSCODE_PORT"
         }
     },
     "navigation": {
@@ -257,8 +213,7 @@ update_frontend_tunnel_config() {
 }
 EOF
 
-        success "Frontend tunnel configuration updated"
-    fi
+    success "Frontend local configuration updated"
 }
 
 # Main startup sequence
@@ -266,7 +221,7 @@ main() {
     echo -e "${CYAN}╔══════════════════════════════════════════════════════════════════╗"
     echo -e "║                🚀 STATIK-SERVER STARTUP SCRIPT                   ║"
     echo -e "║                                                                  ║"
-    echo -e "║  Explicit Tailscale tunneling for Frontend + VS Code services   ║"
+    echo -e "║  Local development environment for Frontend + VS Code services   ║"
     echo -e "╚══════════════════════════════════════════════════════════════════╝${NC}\n"
 
     # Create required directories
@@ -277,25 +232,20 @@ main() {
 
     start_frontend_server
     start_vscode_server
-    create_tailscale_tunnel
-    update_frontend_tunnel_config
+    create_local_config
+    update_frontend_local_config
     generate_qr_code
 
     # Final status
-    echo -e "\n${GREEN}✅ Statik-Server is now running with Tailscale tunneling!${NC}\n"
+    echo -e "\n${GREEN}✅ Statik-Server is now running locally!${NC}\n"
 
-    local tailscale_ip
-    tailscale_ip=$(cat "$STATIK_HOME/tailscale_ip" 2>/dev/null)
-
-    if [[ -n "$tailscale_ip" ]]; then
-        echo -e "${CYAN}🌍 Access URLs:${NC}"
-        echo -e "  ${YELLOW}Frontend (Default):${NC} http://$tailscale_ip:$FRONTEND_PORT"
-        echo -e "  ${YELLOW}VS Code:${NC}            http://$tailscale_ip:$VSCODE_PORT"
-        echo -e "\n${CYAN}📱 User Workflow:${NC}"
-        echo -e "  ${GREEN}1.${NC} Scan the QR code above"
-        echo -e "  ${GREEN}2.${NC} Access the frontend interface"
-        echo -e "  ${GREEN}3.${NC} Navigate to VS Code via the '💻 VS Code' tab"
-    fi
+    echo -e "${CYAN}🌍 Access URLs:${NC}"
+    echo -e "  ${YELLOW}Frontend (Default):${NC} http://localhost:$FRONTEND_PORT"
+    echo -e "  ${YELLOW}VS Code:${NC}            http://localhost:$VSCODE_PORT"
+    echo -e "\n${CYAN}📱 User Workflow:${NC}"
+    echo -e "  ${GREEN}1.${NC} Open a web browser to the frontend URL"
+    echo -e "  ${GREEN}2.${NC} Access the frontend interface"
+    echo -e "  ${GREEN}3.${NC} Navigate to VS Code via the '💻 VS Code' tab"
 
     echo -e "\n${CYAN}Logs:${NC} $STATIK_HOME/logs/"
     echo -e "${CYAN}Config:${NC} $STATIK_HOME/config/"

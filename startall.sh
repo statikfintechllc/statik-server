@@ -326,47 +326,33 @@ generate_qr_codes() {
 update_frontend_config() {
     log "Updating frontend configuration..."
 
-    local tailscale_ip
-    tailscale_ip=$(cat "$STATIK_HOME/tailscale_ip" 2>/dev/null)
-
-    if [[ -n "$tailscale_ip" ]]; then
-        # Create configuration file for frontend
-        cat > "$STATIK_HOME/config.json" << EOF
+    # Create configuration file for frontend
+    cat > "$STATIK_HOME/config.json" << EOF
 {
     "frontend": {
         "port": $FRONTEND_PORT,
-        "url": "http://$tailscale_ip:$FRONTEND_PORT"
+        "url": "http://localhost:$FRONTEND_PORT"
     },
     "vscode": {
         "stock": {
             "port": $VSCODE_PORT,
-            "url": "http://$tailscale_ip:$VSCODE_PORT",
-            "iframe_src": "http://$tailscale_ip:$VSCODE_PORT",
+            "url": "http://localhost:$VSCODE_PORT",
+            "iframe_src": "http://localhost:$VSCODE_PORT",
             "name": "Stock VS Code",
             "description": "Standard VS Code Server"
         },
         "gremlingpt": {
             "port": $GREMLINGPT_PORT,
-            "url": "http://$tailscale_ip:$GREMLINGPT_PORT",
-            "iframe_src": "http://$tailscale_ip:$GREMLINGPT_PORT",
+            "url": "http://localhost:$GREMLINGPT_PORT",
+            "iframe_src": "http://localhost:$GREMLINGPT_PORT",
             "name": "GremlinGPT VS Code",
             "description": "AI-Enhanced VS Code with GremlinGPT"
         }
-    },
-    "tailscale": {
-        "ip": "$tailscale_ip",
-        "enabled": true
-    },
-    "tunnels": {
-        "frontend": "$TAILSCALE_FRONTEND_NAME",
-        "vscode_stock": "$TAILSCALE_VSCODE_NAME",
-        "statik_code": "$TAILSCALE_GREMLINGPT_NAME"
     }
 }
 EOF
 
-        success "Frontend configuration updated"
-    fi
+    success "Frontend configuration updated"
 }
 
 # Display final status
@@ -375,14 +361,11 @@ display_status() {
     echo -e "║                       🎉 STATIK-SERVER READY                       ║"
     echo -e "╚════════════════════════════════════════════════════════════════════╝${NC}\n"
 
-    local tailscale_ip
-    tailscale_ip=$(cat "$STATIK_HOME/tailscale_ip" 2>/dev/null)
-
-    echo -e "${GREEN}✅ All services are running!${NC}\n"    echo -e "${CYAN}🌐 Access URLs:${NC}"
-    if [[ -n "$tailscale_ip" ]]; then
-        echo -e "  ${YELLOW}📱 Frontend Dashboard:${NC} http://$tailscale_ip:$FRONTEND_PORT"
-        echo -e "  ${YELLOW}💻 Stock VS Code:${NC}     http://$tailscale_ip:$VSCODE_PORT"
-        echo -e "  ${YELLOW}🤖 GremlinGPT VS Code:${NC} http://$tailscale_ip:$GREMLINGPT_PORT"
+    echo -e "${GREEN}✅ All services are running!${NC}\n"
+    echo -e "${CYAN}🌐 Access URLs:${NC}"
+    echo -e "  ${YELLOW}📱 Frontend Dashboard:${NC} http://localhost:$FRONTEND_PORT"
+    echo -e "  ${YELLOW}💻 Stock VS Code:${NC}     http://localhost:$VSCODE_PORT"
+    echo -e "  ${YELLOW}🤖 GremlinGPT VS Code:${NC} http://localhost:$GREMLINGPT_PORT"
         echo -e "  ${YELLOW}🔒 Local Frontend:${NC}    http://localhost:$FRONTEND_PORT"
         echo -e "  ${YELLOW}🔒 Local Stock VSCode:${NC} http://localhost:$VSCODE_PORT"
         echo -e "  ${YELLOW}🔒 Local GremlinGPT:${NC}   http://localhost:$GREMLINGPT_PORT"
