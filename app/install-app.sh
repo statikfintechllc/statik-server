@@ -209,13 +209,13 @@ while true; do
                 rm -f "$PID_FILE"
             fi
             
-            # Kill any remaining VS Code, tailscale, and socat processes
+            # Kill any remaining VS Code and socat processes
             cleanup_procs=()
             while IFS= read -r line; do
                 if [[ -n "$line" ]]; then
                     cleanup_procs+=("$line")
                 fi
-            done < <(ps aux | grep -E "(serve-web|tailscale|socat.*8443|server-main\.js|bootstrap-fork|extensionHost)" | grep -v grep | awk '{print $2}')
+            done < <(ps aux | grep -E "(serve-web|socat.*8443|server-main\.js|bootstrap-fork|extensionHost)" | grep -v grep | awk '{print $2}')
             
             if [[ ${#cleanup_procs[@]} -gt 0 ]]; then
                 echo "  🔹 Cleaning up ${#cleanup_procs[@]} related processes..."
@@ -230,7 +230,7 @@ while true; do
                     if [[ -n "$line" ]]; then
                         force_procs+=("$line")
                     fi
-                done < <(ps aux | grep -E "(serve-web|tailscale|socat.*8443|server-main\.js|bootstrap-fork|extensionHost)" | grep -v grep | awk '{print $2}')
+                done < <(ps aux | grep -E "(serve-web|socat.*8443|server-main\.js|bootstrap-fork|extensionHost)" | grep -v grep | awk '{print $2}')
                 
                 if [[ ${#force_procs[@]} -gt 0 ]]; then
                     echo "  🔹 Force killing ${#force_procs[@]} stubborn processes..."
@@ -296,25 +296,17 @@ while true; do
             echo "Service Ports:"
             echo "  VS Code Server: 8080"
             echo "  Mesh VPN Admin: 8081"
-            echo "  Tailscale API: 50443"
             echo ""
-            netstat -tlnp 2>/dev/null | grep -E ':(8080|8081|50443)' || echo "  No services listening"
+            netstat -tlnp 2>/dev/null | grep -E ':(8080|8081)' || echo "  No services listening"
             echo -e "\nPress enter to continue..."
             read -r
             ;;
         7)
             clear
-            echo -e "\033[1;36mMesh VPN Status\033[0m"
-            echo "==============="
-            if command -v tailscale >/dev/null; then
-                echo "Tailscale status:"
-                tailscale status 2>/dev/null || echo "  Tailscale not connected"
-                echo ""
-                echo "Current auth key:"
-                echo "  Use 'tailscale login' to connect"
-            else
-                echo "  Tailscale not found in PATH"
-            fi
+            echo -e "\033[1;36mLocal Development Status\033[0m"
+            echo "======================="
+            echo "Local development server ready"
+            echo "Access via: http://localhost:8080"
             echo -e "\nPress enter to continue..."
             read -r
             ;;

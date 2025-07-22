@@ -59,15 +59,14 @@ statik-cli start
 statik-cli mesh key
 
 # On remote device (laptop, tablet, etc.)
-curl -fsSL https://tailscale.com/install.sh | sh
-sudo tailscale up --login-server https://[your-domain]:8443 --authkey [key]
+# Access via local network: http://[server-ip]:8080
 
-# Access VS Code from anywhere!
+# Access VS Code from your local network!
 ```
 
-### 6. Team Collaboration Setup
+### 6. Local Network Collaboration Setup
 ```bash
-# Share mesh access with team
+# Share local network access with team
 statik-cli mesh key
 
 # Team members connect to your mesh

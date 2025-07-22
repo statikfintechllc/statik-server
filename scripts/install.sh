@@ -24,36 +24,8 @@ build_vscode() {
     progress 15 "VS Code build finished"
 }
 
-# Build Tailscale from source
-build_tailscale() {
-    progress 16 "Building Tailscale from source..."
-    local tailscale_dir="./lib/vscode/tailscale"
-    if [[ -d "$tailscale_dir" ]]; then
-        cd "$tailscale_dir"
-        echo "  🔧 Building Tailscale binaries..."
-        if [[ -f "build_dist.sh" ]]; then
-            ./build_dist.sh tailscale.com/cmd/tailscale
-            ./build_dist.sh tailscale.com/cmd/tailscaled
-        elif [[ -f "Makefile" ]]; then
-            make
-        else
-            go build -o tailscale ./cmd/tailscale
-            go build -o tailscaled ./cmd/tailscaled
-        fi
-        # Copy binaries to lib for integration
-        if [[ -f "tailscale" ]]; then
-            cp tailscale ../../../lib/tailscale
-        fi
-        if [[ -f "tailscaled" ]]; then
-            cp tailscaled ../../../lib/tailscaled
-        fi
-        cd - >/dev/null
-        echo "  ✅ Tailscale build complete."
-    else
-        warn "Tailscale source directory not found at $tailscale_dir. Skipping build."
-    fi
-    progress 17 "Tailscale build finished"
-}
+# Removed Tailscale build function - no longer needed
+# Local networking will be handled without external VPN requirements
 #!/usr/bin/env bash
 # Statik-Server One-Command Installer
 # Usage: ./install.sh
@@ -101,7 +73,7 @@ print_header() {
     echo "║              Sovereign AI Development Environment                ║"
     echo "║                                                                  ║"
     echo "║  ✨ Official VS Code Server + GitHub Copilot                     ║"
-    echo "║  🌐 Mesh VPN with Tailscale Integration                          ║"
+    echo "║  🌐 Local Development Environment                                ║"
     echo "║  🔐 Auto-generated Keys & Certificates                           ║"
     echo "║  📱 Mobile Access via QR Codes                                   ║"
     echo "║  🎯 Zero Configuration Required                                  ║"
@@ -312,58 +284,12 @@ build_frontends() {
 
 
 
-# Build mesh VPN (tailscale)
+# Build local networking components (no external VPN)
 build_mesh() {
-    progress 21 "Building mesh VPN components..."
+    progress 21 "Setting up local networking components..."
     
-    # Check if tailscale already exists
-    if [[ -f "./lib/tailscale" ]]; then
-        echo "  ✅ Tailscale binary already exists"
-        progress 24 "Mesh VPN components ready"
-        return 0
-    fi
-    
-    # If mesh sources exist, try to build
-    if [[ -d "./internal/mesh" ]]; then
-        cd ./internal/mesh
-        if [[ -f "go.mod" ]]; then
-            echo "  🔧 Compiling mesh VPN from source..."
-            go build -o ../../lib/tailscale ./cmd/tailscale >/dev/null 2>&1
-            go build -o ../../lib/statik-meshd ./cmd/tailscale >/dev/null 2>&1
-        fi
-        cd - >/dev/null
-    else
-        # Download precompiled tailscale if not available
-        echo "  📥 Downloading tailscale binary..."
-        local tailscale_version="1.76.1"
-        local download_url="https://pkgs.tailscale.com/stable/tailscale_${tailscale_version}_amd64.tgz"
-        
-        if command -v curl >/dev/null 2>&1; then
-            curl -L -o "/tmp/tailscale.tgz" "$download_url" >/dev/null 2>&1
-            tar -xzf "/tmp/tailscale.tgz" -C "/tmp" >/dev/null 2>&1
-            cp "/tmp/tailscale_${tailscale_version}_amd64/tailscale" "./lib/tailscale" >/dev/null 2>&1
-            cp "/tmp/tailscale_${tailscale_version}_amd64/tailscaled" "./lib/tailscaled" >/dev/null 2>&1
-            rm -rf "/tmp/tailscale.tgz" "/tmp/tailscale_${tailscale_version}_amd64" >/dev/null 2>&1
-        elif command -v wget >/dev/null 2>&1; then
-            wget -O "/tmp/tailscale.tgz" "$download_url" >/dev/null 2>&1
-            tar -xzf "/tmp/tailscale.tgz" -C "/tmp" >/dev/null 2>&1
-            cp "/tmp/tailscale_${tailscale_version}_amd64/tailscale" "./lib/tailscale" >/dev/null 2>&1
-            cp "/tmp/tailscale_${tailscale_version}_amd64/tailscaled" "./lib/tailscaled" >/dev/null 2>&1
-            rm -rf "/tmp/tailscale.tgz" "/tmp/tailscale_${tailscale_version}_amd64" >/dev/null 2>&1
-        else
-            echo "  ⚠️  Could not download tailscale (no curl/wget), mesh VPN will be disabled"
-            progress 10 20 "Mesh VPN build skipped"
-            return 0
-        fi
-        
-        if [[ -f "./lib/tailscale" ]]; then
-            chmod +x "./lib/tailscale"
-            chmod +x "./lib/tailscaled"
-            echo "  ✅ Tailscale binary downloaded and ready"
-        fi
-    fi
-    
-    progress 24 "Mesh VPN build complete"
+    echo "  ✅ Local networking components ready"
+    progress 24 "Local networking setup complete"
 }
 
 
@@ -400,22 +326,10 @@ generate_keys() {
         openssl rand -hex 16 > "$cert_dir/api.key"
     fi
     
-    # Generate noise private key for tailscale
-    if [[ ! -f "$cert_dir/noise.key" ]]; then
-        echo "  🔑 Generating noise private key for mesh VPN..."
-        if [[ -f "lib/tailscale" ]]; then
-            # Use tailscale's built-in key generation or create a random key
-            openssl rand -hex 32 > "$cert_dir/noise.key"
-        else
-            # Fallback: generate a random key with proper format
-            echo "privkey:$(openssl rand -hex 32)" > "$cert_dir/noise.key"
-        fi
-    fi
-    
-    # Generate DERP private key for mesh VPN
-    if [[ ! -f "$cert_dir/derp.key" ]]; then
-        echo "  🔑 Generating DERP private key for mesh VPN..."
-        echo "privkey:$(openssl rand -hex 32)" > "$cert_dir/derp.key"
+    # Generate general encryption key for local services
+    if [[ ! -f "$cert_dir/encryption.key" ]]; then
+        echo "  🔑 Generating encryption key for local services..."
+        openssl rand -hex 32 > "$cert_dir/encryption.key"
     fi
     
     # Note: Auto-connect key will be generated at first startup
@@ -430,31 +344,27 @@ generate_keys() {
 
 
 # Initialize mesh VPN database
-initialize_mesh() {
-    progress 29 "Initializing mesh VPN database..."
+# Initialize local configuration
+initialize_local_config() {
+    progress 29 "Initializing local configuration..."
     
-    if [[ -f "$STATIK_HOME/../lib/tailscale" ]]; then
-        echo "  🗄️ Setting up tailscale configuration..."
-        
-        # Create tailscale config directory if it doesn't exist
-        mkdir -p "$STATIK_HOME/config"
-        
-        # Create tailscale daemon configuration
-        cat > "$STATIK_HOME/config/tailscaled.state" << EOF
+    echo "  🗄️ Setting up local configuration..."
+    
+    # Create local config directory if it doesn't exist
+    mkdir -p "$STATIK_HOME/config"
+    
+    # Create local service configuration
+    cat > "$STATIK_HOME/config/local.json" << EOF
 {
   "version": 1,
-  "authkey": "",
-  "hostname": "statik-server"
+  "hostname": "statik-server",
+  "local_mode": true
 }
 EOF
-        
-        # The tailscale daemon will be configured on first startup
-        echo "  ✅ Tailscale configuration initialized"
-    else
-        echo "  ⚠️ Tailscale not found, mesh will be configured on first run"
-    fi
     
-    progress 32 "Mesh VPN initialization complete"
+    echo "  ✅ Local configuration initialized"
+    
+    progress 32 "Local configuration complete"
 }
 
 # Setup GitHub Copilot
@@ -562,28 +472,15 @@ EOF
     progress 40 "Desktop integration complete"
 }
 
-# Auto-connect to Tailscale and get global access
+# Setup local development access
 setup_global_access() {
-    echo -e "\n${CYAN}🌍 Setting up global mesh access...${NC}"
+    echo -e "\n${CYAN}🌍 Setting up local development access...${NC}"
     
-    # Check if user is already connected to Tailscale
-    if command -v tailscale >/dev/null 2>&1; then
-        local tailscale_ip=$(tailscale ip -4 2>/dev/null | head -n1)
-        if [[ -n "$tailscale_ip" ]]; then
-            log "Already connected to Tailscale: $tailscale_ip"
-            echo "$tailscale_ip" > "$STATIK_HOME/tailscale_ip"
-        else
-            echo -e "${YELLOW}🔗 To enable global access, connect to Tailscale:${NC}"
-            echo -e "  ${GREEN}1. Run:${NC} sudo tailscale up"
-            echo -e "  ${GREEN}2. Follow the login link${NC}"
-            echo -e "  ${GREEN}3. Restart statik-server${NC}"
-        fi
-    else
-        echo -e "${YELLOW}🔗 Tailscale not installed. Install for global access:${NC}"
-        echo -e "  ${GREEN}1. Run:${NC} curl -fsSL https://tailscale.com/install.sh | sh"
-        echo -e "  ${GREEN}2. Run:${NC} sudo tailscale up"
-        echo -e "  ${GREEN}3. Restart statik-server${NC}"
-    fi
+    echo -e "${GREEN}✅ Local access ready!${NC}"
+    echo -e "  ${GREEN}Frontend:${NC} http://localhost:3000"
+    echo -e "  ${GREEN}VS Code:${NC} http://localhost:8080"
+    echo -e "  ${GREEN}GremlinGPT:${NC} http://localhost:7777"
+}
 }
 
 # Main installation function
@@ -596,11 +493,10 @@ main() {
     setup_directories
     install_vscode_cli
     build_vscode
-    build_tailscale
     build_frontends
     build_mesh
     generate_keys
-    initialize_mesh
+    initialize_local_config
     setup_copilot
     create_launch_scripts
     create_desktop_integration

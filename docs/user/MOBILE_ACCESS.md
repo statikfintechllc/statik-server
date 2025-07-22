@@ -58,21 +58,27 @@ https://[your-domain]:8443
 ### Mesh VPN Setup for Mobile
 Connect your mobile device to your development mesh:
 
+# Mobile Access (Local Network)
+
+Access your Statik-Server development environment from mobile devices on your local network.
+
+## Local Network Access
+
 #### iOS/iPadOS
-1. Install Tailscale from App Store
-2. Get connection key: `statik-cli mesh key`
-3. Add network in Tailscale app using the key
-4. Access VS Code via mesh IP
+1. Connect to the same WiFi network as your server
+2. Open Safari and navigate to: `http://[server-ip]:8080`
+3. Access VS Code directly in the browser
+4. Use responsive mobile interface
 
 #### Android
-1. Install Tailscale from Google Play
-2. Get connection key: `statik-cli mesh key`
-3. Add network in Tailscale app using the key
-4. Access VS Code via mesh IP
+1. Connect to the same WiFi network as your server
+2. Open Chrome and navigate to: `http://[server-ip]:8080`
+3. Access VS Code directly in the browser
+4. Use responsive mobile interface
 
-### Benefits of Mesh Access
-- **Global Access**: Connect from anywhere in the world
-- **Secure**: Encrypted WireGuard tunnels
+### Benefits of Local Network Access
+- **Local Access**: Connect from any device on your network
+- **Secure**: Runs on your private network
 - **No Port Forwarding**: Works behind firewars and NAT
 - **Multi-Device**: Connect multiple mobile devices
 

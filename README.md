@@ -165,7 +165,6 @@ Statik-Server combines the best of several technologies to create a sovereign AI
 ### Dependencies (Auto-installed)
 - Git, curl, wget, unzip
 - Node.js 18+ and npm
-- Go 1.21+ (for Tailscale compilation)
 - OpenSSL for certificate generation
 - UFW or iptables for firewall management
 
@@ -252,15 +251,14 @@ Once running, access your development environment via:
 - **Local VS Code**: `statik-cli code`
 - **HTTPS**: https://localhost:8443
 
-### 🌍 Global Access (via Mesh VPN)
-- Connect any device with Tailscale to your mesh network
-- Access VS Code from anywhere in the world
-- Secure WireGuard-based tunnel
+### 🌍 Local Development Access
+- Access VS Code from your local network
+- Secure development environment
+- Built-in authentication and security
 
-### 📱 Mobile Access
-- Scan QR codes displayed at startup
-- Install Tailscale on mobile device
-- Connect to your development environment
+### 📱 Local Network Access
+- Access via local network from any device
+- Connect to your development environment from mobile devices
 
 ## 🛠️ CLI Commands
 

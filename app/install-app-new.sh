@@ -88,7 +88,7 @@ create_web_interface() {
     <div class="container">
         <div class="header">
             <h1>🚀 Statik Server</h1>
-            <p>🌍 Global AI Development Environment • Powered by Tailscale Mesh</p>
+            <p>🌍 Local AI Development Environment</p>
         </div>
 
         <div class="tabs">
@@ -114,9 +114,9 @@ create_web_interface() {
                     <h3>⚡ System Status</h3>
                     <p>Monitor services</p>
                 </a>
-                <a href="https://tailscale.com/admin" target="_blank" class="link-card">
-                    <h3>🌐 Mesh Network</h3>
-                    <p>Tailscale Admin</p>
+                <a href="http://localhost:8080" target="_blank" class="link-card">
+                    <h3>🌐 Development Server</h3>
+                    <p>Local Access</p>
                 </a>
             </div>
         </div>
@@ -145,8 +145,8 @@ create_web_interface() {
                     <p id="vscode-status">🔄 Checking...</p>
                 </div>
                 <div class="status-item">
-                    <h3>🌐 Tailscale Mesh</h3>
-                    <p id="mesh-status">🔄 Checking...</p>
+                    <h3>🌐 Local Development</h3>
+                    <p id="mesh-status">✅ Ready</p>
                 </div>
                 <div class="status-item">
                     <h3>🔒 HTTPS Proxy</h3>
@@ -172,7 +172,6 @@ create_web_interface() {
                     <h3>🌐 Access URLs</h3>
                     <p><strong>Local:</strong> <a href="http://localhost:8080" target="_blank" style="color: #87CEEB;">localhost:8080</a></p>
                     <p><strong>HTTPS:</strong> <a href="https://localhost:8443" target="_blank" style="color: #87CEEB;">localhost:8443</a></p>
-                    <p><strong>Global:</strong> <span id="tailscale-url">🔄 Checking...</span></p>
                 </div>
             </div>
         </div>
@@ -219,10 +218,9 @@ create_web_interface() {
 
             // Check other services (would need API endpoint)
             // For now, show placeholder status
-            document.getElementById('mesh-status').innerHTML = '🔄 Detecting Tailscale...';
+            document.getElementById('mesh-status').innerHTML = '✅ Local development ready';
             document.getElementById('https-status').innerHTML = '🔄 Checking HTTPS proxy...';
             document.getElementById('copilot-status').innerHTML = '🔄 Verifying Copilot...';
-            document.getElementById('tailscale-url').innerHTML = '🔄 Getting mesh URL...';
         }
 
         // Initialize
@@ -262,7 +260,7 @@ if command -v zenity >/dev/null 2>&1; then
     
     case "$choice" in
         "🚀 Start Server")
-            zenity --info --width=300 --text="🚀 Starting Statik Server...\n\nThis will launch:\n• VS Code Web Server\n• HTTPS Proxy\n• Tailscale Integration" &
+            zenity --info --width=300 --text="🚀 Starting Statik Server...\n\nThis will launch:\n• VS Code Web Server\n• HTTPS Proxy\n• Local Development" &
             gnome-terminal -- bash -c "cd $HOME/statik-server && ./scripts/run.sh; read -p 'Press Enter to close...'"
             ;;
         "⏹️ Stop Server")
@@ -298,7 +296,7 @@ if command -v zenity >/dev/null 2>&1; then
             fi
             ;;
         "🔧 Settings")
-            zenity --info --width=400 --text="🔧 Settings:\n\n📁 Config: ~/.statik-server/\n🔑 Keys: ~/.statik-server/keys/\n📋 Logs: ~/.statik-server/logs/\n\n🌐 Tailscale: tailscale status"
+            zenity --info --width=400 --text="🔧 Settings:\n\n📁 Config: ~/.statik-server/\n🔑 Keys: ~/.statik-server/keys/\n📋 Logs: ~/.statik-server/logs/\n\n🌐 Local Development Mode"
             ;;
     esac
 else
@@ -355,7 +353,7 @@ Exec=$BINDIR/statik-gui
 Icon=$ICON_PATH
 Terminal=false
 Categories=Development;IDE;Network;
-Keywords=vscode;ai;copilot;tailscale;development;mesh;
+Keywords=vscode;ai;copilot;development;local;
 StartupNotify=true
 StartupWMClass=statik-server
 MimeType=text/plain;

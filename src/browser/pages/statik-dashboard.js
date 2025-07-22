@@ -198,7 +198,7 @@ class StatikDashboard {
                 if (vscodeUrl && vscodeUrl !== iframe.src) {
                     console.log('Loading Stock VS Code from tunnel URL:', vscodeUrl);
                     iframe.src = vscodeUrl;
-                    this.updateStockVSCodeStatus('connected', 'Tunneled via Tailscale');
+                    this.updateStockVSCodeStatus('connected', 'Connected');
                     document.getElementById('stock-vscode-url-status').textContent = vscodeUrl;
                 }
             } else {
@@ -235,7 +235,7 @@ class StatikDashboard {
                 if (vscodeUrl && vscodeUrl !== iframe.src) {
                     console.log('Loading GremlinGPT VS Code from tunnel URL:', vscodeUrl);
                     iframe.src = vscodeUrl;
-                    this.updateGremlinVSCodeStatus('connected', 'AI-Enhanced via Tailscale');
+                    this.updateGremlinVSCodeStatus('connected', 'AI-Enhanced');
                     document.getElementById('gremlin-vscode-url-status').textContent = vscodeUrl;
                 }
             } else {
@@ -274,7 +274,7 @@ class StatikDashboard {
                     iframe.src = vscodeUrl;
 
                     // Update status indicator
-                    this.updateVSCodeStatus('connected', 'Tunneled via Tailscale');
+                    this.updateVSCodeStatus('connected', 'Connected');
                 }
             } else {
                 // Fallback to local
@@ -1096,58 +1096,15 @@ function openLink(url) {
     window.open(url, '_blank', 'noopener,noreferrer');
 }
 
-// Function to get Tailscale configuration
-async function getTailscaleConfig() {
-    try {
-        const response = await fetch('/api/config/runtime');
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.warn('Could not load Tailscale config:', error);
-    }
-    
-    // Fallback: try to get Tailscale IP from known locations
-    try {
-        const ipResponse = await fetch('/api/statik/tailscale/ip');
-        if (ipResponse.ok) {
-            const data = await ipResponse.json();
-            return {
-                tailscale_ip: data.ip,
-                vscode: {
-                    stock: { url: `http://${data.ip}:8080` },
-                    gremlingpt: { url: `http://${data.ip}:8081` }
-                }
-            };
-        }
-    } catch (error) {
-        console.warn('Could not get Tailscale IP:', error);
-    }
-    
-    return null;
-}
-
 // Function to open VS Code (Stock)
 async function openVSCode() {
-    const config = await getTailscaleConfig();
-    let url = 'http://localhost:8080'; // fallback
-    
-    if (config && config.vscode && config.vscode.stock) {
-        url = config.vscode.stock.url;
-    }
-    
+    let url = 'http://localhost:8080'; // default local URL
     window.open(url, '_blank', 'noopener,noreferrer');
 }
 
 // Function to open Statik-Code (GremlinGPT VS Code)
 async function openStatikCode() {
-    const config = await getTailscaleConfig();
-    let url = 'http://localhost:8081'; // fallback
-    
-    if (config && config.vscode && config.vscode.gremlingpt) {
-        url = config.vscode.gremlingpt.url;
-    }
-    
+    let url = 'http://localhost:8081'; // default local URL
     window.open(url, '_blank', 'noopener,noreferrer');
 }
 
