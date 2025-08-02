@@ -481,7 +481,6 @@ setup_global_access() {
     echo -e "  ${GREEN}VS Code:${NC} http://localhost:8080"
     echo -e "  ${GREEN}GremlinGPT:${NC} http://localhost:7777"
 }
-}
 
 # Main installation function
 main() {
