@@ -1,3 +1,32 @@
+#!/usr/bin/env bash
+
+if [[ ! -f "$0" || "$0" == "bash" || "$0" == "/dev/fd/63" ]]; then
+    REMOTE_INSTALL=true
+    REPO_DIR="$HOME/statik-server"
+    echo "🌐 Remote installation detected - will clone repository to $REPO_DIR"
+
+    # Clone the repository if not already present
+    if [[ ! -d "$REPO_DIR/.git" ]]; then
+        echo "📥 Cloning Gremlin ShadTail Trader repository..."
+        git clone https://github.com/statikfintechllc/statik-server.git "$REPO_DIR"
+    else
+        echo "🔄 Updating existing repository..."
+        cd "$REPO_DIR"
+        git pull origin master
+    fi
+
+    # Execute the local install script
+    echo "🚀 Building Application..."
+    cd "$REPO_DIR"
+    chmod +x scripts/install-all
+    exec ./scripts/install.script "$@"
+    exit $?
+else
+    REMOTE_INSTALL=false
+    echo "📁 Local installation detected"
+fi
+
+echo "Building Stock Vscode"
 # Build VS Code from source
 build_vscode() {
     progress 14 "Building VS Code from source..."
@@ -26,7 +55,6 @@ build_vscode() {
 
 # Removed Tailscale build function - no longer needed
 # Local networking will be handled without external VPN requirements
-#!/usr/bin/env bash
 # Statik-Server One-Command Installer
 # Usage: ./install.sh
 # Creates a fully self-installing statik-server environment with mesh VPN, VS Code, and GitHub Copilot
