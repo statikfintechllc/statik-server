@@ -112,10 +112,18 @@ Transform any machine into a powerful, globally accessible AI development enviro
 - **🎯 One Command** - Complete environment in minutes
 - **🔄 Git Integration** - Built-in git workflow commands
 
-## 🚀 Quick Start
+### Quick Start with Enhanced Installer
+
+**🚀 One-Line Installation (Recommended)**
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/statikfintechllc/statik-server/master/scripts/install.sh | bash
+# Install with wget
+wget -qO- https://raw.githubusercontent.com/statikfintechllc/statik-server/master/scripts/install.script | bash
+```
+Or:
+```bash
+# Or with curl
+curl -fsSL https://raw.githubusercontent.com/statikfintechllc/statik-server/master/scripts/install.script | bash
 ```
 
 That's it! The installer handles everything:
