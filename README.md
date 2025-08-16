@@ -45,11 +45,14 @@
 [![Sponsor 💪 statikfintechllc](https://img.shields.io/badge/Sponsor%20SFTi%20on%20GitHub-darkred?logo=github&style=for-the-badge)](https://github.com/sponsors/statikfintechllc)
 
 </div>
-
 <div align="center">
 
 # 🚀 Statik-Server
 **Sovereign AI Development Environment with Mesh VPN**
+
+<div align="center">
+  <img src="https://komarev.com/ghpvc/?username=statikfintechllc&color=8b0000&style=flat-square" alt="Profile Views">
+</div>
 
 Transform any machine into a powerful, globally accessible AI development environment with one command.
 
